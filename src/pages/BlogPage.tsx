@@ -1,9 +1,9 @@
-
-import React, { useState } from 'react';
-import { ArrowLeft, Calendar, Tag, Clock, ExternalLink } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { ArrowLeft, Calendar, Tag, Clock, ExternalLink, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import BlogModal from '@/components/BlogModal';
 import { Link } from 'react-router-dom';
 
@@ -11,6 +11,8 @@ const BlogPage = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('date');
 
   const blogPosts = [
     {
@@ -229,9 +231,34 @@ Firebase accelerates development by providing scalable backend services without 
 
   const categories = ['All', ...new Set(blogPosts.map(post => post.category))];
   
-  const filteredPosts = selectedCategory === 'All' 
-    ? blogPosts 
-    : blogPosts.filter(post => post.category === selectedCategory);
+  // Filter and sort posts
+  const filteredAndSortedPosts = useMemo(() => {
+    let filtered = blogPosts.filter(post => {
+      const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           post.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+      const matchesCategory = selectedCategory === 'All' || post.category === selectedCategory;
+      
+      return matchesSearch && matchesCategory;
+    });
+
+    // Sort posts
+    switch (sortBy) {
+      case 'date':
+        return filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+      case 'title':
+        return filtered.sort((a, b) => a.title.localeCompare(b.title));
+      case 'readTime':
+        return filtered.sort((a, b) => {
+          const aTime = parseInt(a.readTime.split(' ')[0]);
+          const bTime = parseInt(b.readTime.split(' ')[0]);
+          return aTime - bTime;
+        });
+      default:
+        return filtered;
+    }
+  }, [blogPosts, searchTerm, selectedCategory, sortBy]);
 
   const handlePostClick = (post) => {
     setSelectedPost(post);
@@ -247,7 +274,7 @@ Firebase accelerates development by providing scalable backend services without 
             <div className="space-y-2">
               <h1 className="text-3xl font-bold text-gradient">All Blog Posts</h1>
               <p className="text-muted-foreground">
-                Frontend development insights, tips, and tutorials
+                Frontend development insights, tips, and tutorials ({filteredAndSortedPosts.length} posts)
               </p>
             </div>
             <Button variant="outline" asChild>
@@ -260,91 +287,137 @@ Firebase accelerates development by providing scalable backend services without 
         </div>
       </div>
 
-      {/* Category Filter */}
+      {/* Search and Filters */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <Button
-              key={category}
-              variant={selectedCategory === category ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedCategory(category)}
-              className="transition-all duration-200"
-            >
-              {category}
-            </Button>
-          ))}
+        <div className="space-y-6">
+          {/* Search */}
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search posts..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+
+          {/* Filters */}
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="flex flex-wrap gap-2">
+              <span className="text-sm font-medium text-muted-foreground">Category:</span>
+              {categories.map((category) => (
+                <Button
+                  key={category}
+                  variant={selectedCategory === category ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSelectedCategory(category)}
+                  className="transition-all duration-200"
+                >
+                  {category}
+                </Button>
+              ))}
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-muted-foreground">Sort by:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-3 py-1 border border-border rounded-md bg-background text-foreground text-sm"
+              >
+                <option value="date">Newest First</option>
+                <option value="title">Title A-Z</option>
+                <option value="readTime">Read Time</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Blog Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredPosts.map((post, index) => (
-            <Card 
-              key={post.title} 
-              className="group hover:shadow-lg transition-all duration-300 animate-fade-in cursor-pointer"
-              style={{ animationDelay: `${index * 0.1}s` }}
-              onClick={() => handlePostClick(post)}
+        {filteredAndSortedPosts.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground text-lg">No posts found matching your criteria.</p>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedCategory('All');
+              }}
+              className="mt-4"
             >
-              <CardHeader className="p-0">
-                <div className="relative overflow-hidden rounded-t-lg">
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
-                      <Tag className="h-3 w-3 mr-1" />
-                      {post.category}
-                    </Badge>
+              Clear Filters
+            </Button>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredAndSortedPosts.map((post, index) => (
+              <Card 
+                key={post.title} 
+                className="group hover:shadow-lg transition-all duration-300 animate-fade-in cursor-pointer"
+                style={{ animationDelay: `${index * 0.1}s` }}
+                onClick={() => handlePostClick(post)}
+              >
+                <CardHeader className="p-0">
+                  <div className="relative overflow-hidden rounded-t-lg">
+                    <img
+                      src={post.image}
+                      alt={post.title}
+                      className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    <div className="absolute top-4 left-4">
+                      <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
+                        <Tag className="h-3 w-3 mr-1" />
+                        {post.category}
+                      </Badge>
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent className="p-6 space-y-4">
-                <div className="space-y-2">
-                  <h3 className="text-xl font-semibold group-hover:text-primary transition-colors duration-200 line-clamp-2">
-                    {post.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
-                    {post.description}
-                  </p>
-                </div>
+                </CardHeader>
                 
-                <div className="flex flex-wrap gap-1 mb-4">
-                  {post.tags.slice(0, 3).map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                  {post.tags.length > 3 && (
-                    <Badge variant="outline" className="text-xs">
-                      +{post.tags.length - 3}
-                    </Badge>
-                  )}
-                </div>
-                
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <div className="flex items-center space-x-1">
-                    <Calendar className="h-3 w-3" />
-                    <span>{new Date(post.date).toLocaleDateString('en-US', { 
-                      month: 'short', 
-                      day: 'numeric', 
-                      year: 'numeric' 
-                    })}</span>
+                <CardContent className="p-6 space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold group-hover:text-primary transition-colors duration-200 line-clamp-2">
+                      {post.title}
+                    </h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
+                      {post.description}
+                    </p>
                   </div>
-                  <div className="flex items-center space-x-1">
-                    <Clock className="h-3 w-3" />
-                    <span>{post.readTime}</span>
+                  
+                  <div className="flex flex-wrap gap-1 mb-4">
+                    {post.tags.slice(0, 3).map((tag) => (
+                      <Badge key={tag} variant="outline" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                    {post.tags.length > 3 && (
+                      <Badge variant="outline" className="text-xs">
+                        +{post.tags.length - 3}
+                      </Badge>
+                    )}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <div className="flex items-center space-x-1">
+                      <Calendar className="h-3 w-3" />
+                      <span>{new Date(post.date).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric', 
+                        year: 'numeric' 
+                      })}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Clock className="h-3 w-3" />
+                      <span>{post.readTime}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {/* Blog CTA */}
         <div className="text-center mt-16">

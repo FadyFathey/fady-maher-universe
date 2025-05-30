@@ -1,15 +1,18 @@
-
-import React, { useState } from 'react';
-import { ExternalLink, Github, ArrowLeft } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { ExternalLink, Github, ArrowLeft, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import ProjectModal from '@/components/ProjectModal';
 import { Link } from 'react-router-dom';
 
 const ProjectsPage = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTechnology, setSelectedTechnology] = useState('All');
+  const [sortBy, setSortBy] = useState('featured');
 
   const projects = [
     {
@@ -142,6 +145,41 @@ const ProjectsPage = () => {
     }
   ];
 
+  // Get all unique technologies for filter
+  const allTechnologies = useMemo(() => {
+    const techs = new Set();
+    projects.forEach(project => {
+      project.technologies.forEach(tech => techs.add(tech));
+    });
+    return ['All', ...Array.from(techs)].sort();
+  }, [projects]);
+
+  // Filter and sort projects
+  const filteredAndSortedProjects = useMemo(() => {
+    let filtered = projects.filter(project => {
+      const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           project.technologies.some(tech => tech.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+      const matchesTechnology = selectedTechnology === 'All' || 
+                               project.technologies.includes(selectedTechnology);
+      
+      return matchesSearch && matchesTechnology;
+    });
+
+    // Sort projects
+    switch (sortBy) {
+      case 'featured':
+        return filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+      case 'title':
+        return filtered.sort((a, b) => a.title.localeCompare(b.title));
+      case 'technology':
+        return filtered.sort((a, b) => a.technologies[0].localeCompare(b.technologies[0]));
+      default:
+        return filtered;
+    }
+  }, [projects, searchTerm, selectedTechnology, sortBy]);
+
   const handleProjectClick = (project) => {
     setSelectedProject(project);
     setIsModalOpen(true);
@@ -156,7 +194,7 @@ const ProjectsPage = () => {
             <div className="space-y-2">
               <h1 className="text-3xl font-bold text-gradient">All Projects</h1>
               <p className="text-muted-foreground">
-                A comprehensive showcase of my frontend development work
+                A comprehensive showcase of my frontend development work ({filteredAndSortedProjects.length} projects)
               </p>
             </div>
             <Button variant="outline" asChild>
@@ -169,86 +207,149 @@ const ProjectsPage = () => {
         </div>
       </div>
 
-      {/* Projects Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <Card 
-              key={project.title} 
-              className="group hover:shadow-lg transition-all duration-300 animate-fade-in cursor-pointer"
-              style={{ animationDelay: `${index * 0.1}s` }}
-              onClick={() => handleProjectClick(project)}
-            >
-              <CardHeader className="p-0">
-                <div className="relative overflow-hidden rounded-t-lg">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  {project.featured && (
-                    <div className="absolute top-4 right-4">
-                      <Badge className="bg-primary/90 text-primary-foreground">
-                        Featured
-                      </Badge>
-                    </div>
-                  )}
-                </div>
-              </CardHeader>
-              
-              <CardContent className="p-6 space-y-4">
-                <div className="space-y-2">
-                  <h3 className="text-xl font-semibold group-hover:text-primary transition-colors duration-200">
-                    {project.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
-                    {project.description}
-                  </p>
-                </div>
-                
-                <div className="flex flex-wrap gap-1">
-                  {project.technologies.slice(0, 3).map((tech) => (
-                    <Badge key={tech} variant="secondary" className="text-xs">
-                      {tech}
-                    </Badge>
-                  ))}
-                  {project.technologies.length > 3 && (
-                    <Badge variant="secondary" className="text-xs">
-                      +{project.technologies.length - 3}
-                    </Badge>
-                  )}
-                </div>
-              </CardContent>
+      {/* Filters and Search */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-6">
+          {/* Search */}
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search projects..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
 
-              <CardFooter className="p-6 pt-0 flex justify-between">
-                {project.githubUrl !== '#' && (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    asChild
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-                      <Github className="h-4 w-4" />
-                    </a>
-                  </Button>
-                )}
-                {project.liveUrl !== '#' && (
-                  <Button 
-                    size="sm" 
-                    asChild
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </Button>
-                )}
-              </CardFooter>
-            </Card>
-          ))}
+          {/* Filters */}
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="flex flex-wrap gap-2">
+              <span className="text-sm font-medium text-muted-foreground">Technology:</span>
+              {allTechnologies.map((tech) => (
+                <Button
+                  key={tech}
+                  variant={selectedTechnology === tech ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSelectedTechnology(tech)}
+                  className="transition-all duration-200"
+                >
+                  {tech}
+                </Button>
+              ))}
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-muted-foreground">Sort by:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-3 py-1 border border-border rounded-md bg-background text-foreground text-sm"
+              >
+                <option value="featured">Featured First</option>
+                <option value="title">Title A-Z</option>
+                <option value="technology">Technology</option>
+              </select>
+            </div>
+          </div>
         </div>
+      </div>
+
+      {/* Projects Grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        {filteredAndSortedProjects.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground text-lg">No projects found matching your criteria.</p>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedTechnology('All');
+              }}
+              className="mt-4"
+            >
+              Clear Filters
+            </Button>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredAndSortedProjects.map((project, index) => (
+              <Card 
+                key={project.title} 
+                className="group hover:shadow-lg transition-all duration-300 animate-fade-in cursor-pointer"
+                style={{ animationDelay: `${index * 0.1}s` }}
+                onClick={() => handleProjectClick(project)}
+              >
+                <CardHeader className="p-0">
+                  <div className="relative overflow-hidden rounded-t-lg">
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    {project.featured && (
+                      <div className="absolute top-4 right-4">
+                        <Badge className="bg-primary/90 text-primary-foreground">
+                          Featured
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+                </CardHeader>
+                
+                <CardContent className="p-6 space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold group-hover:text-primary transition-colors duration-200">
+                      {project.title}
+                    </h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
+                      {project.description}
+                    </p>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-1">
+                    {project.technologies.slice(0, 3).map((tech) => (
+                      <Badge key={tech} variant="secondary" className="text-xs">
+                        {tech}
+                      </Badge>
+                    ))}
+                    {project.technologies.length > 3 && (
+                      <Badge variant="secondary" className="text-xs">
+                        +{project.technologies.length - 3}
+                      </Badge>
+                    )}
+                  </div>
+                </CardContent>
+
+                <CardFooter className="p-6 pt-0 flex justify-between">
+                  {project.githubUrl !== '#' && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      asChild
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                        <Github className="h-4 w-4" />
+                      </a>
+                    </Button>
+                  )}
+                  {project.liveUrl !== '#' && (
+                    <Button 
+                      size="sm" 
+                      asChild
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {/* GitHub CTA */}
         <div className="text-center mt-16">
