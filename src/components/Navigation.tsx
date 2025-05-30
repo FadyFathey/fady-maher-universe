@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Moon, Sun, Menu, X } from 'lucide-react';
 import { Button } from './ui/button';
@@ -24,6 +23,7 @@ const Navigation = () => {
 
   const navItems = [
     { label: 'About', href: '#about' },
+    { label: 'Technologies', href: '#technologies' },
     { label: 'Projects', href: '#projects' },
     { label: 'Blog', href: '#blog' },
     { label: 'Contact', href: '#contact' }
