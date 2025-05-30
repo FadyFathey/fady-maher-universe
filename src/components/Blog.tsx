@@ -1,10 +1,11 @@
-
 import React, { useState } from 'react';
 import { ArrowRight, Calendar, Tag } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Badge } from './ui/badge';
 import BlogModal from './BlogModal';
+import { Link } from 'react-router-dom';
+import { ExternalLink } from 'lucide-react';
 
 const Blog = () => {
   const [selectedPost, setSelectedPost] = useState(null);
@@ -173,15 +174,18 @@ These practices will help you build more robust and maintainable TypeScript appl
         </div>
 
         {/* CTA */}
-        <div className="text-center">
-          <div className="space-y-4">
-            <p className="text-muted-foreground">
-              Want to read more articles and tutorials?
-            </p>
-            <Button asChild>
+        <div className="text-center space-y-4">
+          <Button asChild>
+            <Link to="/blog">
+              View All Posts
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+          <div>
+            <Button variant="outline" asChild>
               <a href="https://blogs-v2.vercel.app" target="_blank" rel="noopener noreferrer">
                 Visit My Blog
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ExternalLink className="ml-2 h-4 w-4" />
               </a>
             </Button>
           </div>

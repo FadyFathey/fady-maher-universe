@@ -24,12 +24,17 @@ const Navigation = () => {
   const navItems = [
     { label: 'About', href: '#about' },
     { label: 'Technologies', href: '#technologies' },
-    { label: 'Projects', href: '#projects' },
-    { label: 'Blog', href: '#blog' },
+    { label: 'Projects', href: '#projects', route: '/projects' },
+    { label: 'Blog', href: '#blog', route: '/blog' },
     { label: 'Contact', href: '#contact' }
   ];
 
-  const scrollToSection = (href: string) => {
+  const scrollToSection = (href: string, route?: string) => {
+    if (route) {
+      window.location.href = route;
+      return;
+    }
+    
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -45,11 +50,7 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
             <a 
-              href="#hero" 
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToSection('#hero');
-              }}
+              href="/" 
               className="text-xl font-bold text-gradient hover:opacity-80 transition-opacity"
             >
               Fady Fathey
@@ -62,10 +63,12 @@ const Navigation = () => {
               {navItems.map((item) => (
                 <a
                   key={item.label}
-                  href={item.href}
+                  href={item.route || item.href}
                   onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection(item.href);
+                    if (!item.route) {
+                      e.preventDefault();
+                      scrollToSection(item.href);
+                    }
                   }}
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200 font-medium"
                 >
@@ -106,10 +109,14 @@ const Navigation = () => {
               {navItems.map((item) => (
                 <a
                   key={item.label}
-                  href={item.href}
+                  href={item.route || item.href}
                   onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection(item.href);
+                    if (!item.route) {
+                      e.preventDefault();
+                      scrollToSection(item.href);
+                    } else {
+                      setIsMenuOpen(false);
+                    }
                   }}
                   className="text-muted-foreground hover:text-foreground block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
                 >

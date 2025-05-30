@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from './ui/card';
 import { Badge } from './ui/badge';
 import ProjectModal from './ProjectModal';
+import { Link } from 'react-router-dom';
 
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState(null);
@@ -248,13 +249,21 @@ const Projects = () => {
         </div>
 
         {/* View More */}
-        <div className="text-center mt-12">
-          <Button variant="outline" asChild>
-            <a href="https://github.com/FadyFathey" target="_blank" rel="noopener noreferrer">
-              View All Projects on GitHub
+        <div className="text-center mt-12 space-y-4">
+          <Button asChild>
+            <Link to="/projects">
+              View All Projects
               <ArrowRight className="ml-2 h-4 w-4" />
-            </a>
+            </Link>
           </Button>
+          <div>
+            <Button variant="outline" asChild>
+              <a href="https://github.com/FadyFathey" target="_blank" rel="noopener noreferrer">
+                GitHub Profile
+                <ExternalLink className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
+          </div>
         </div>
       </div>
 
