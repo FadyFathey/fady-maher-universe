@@ -1,105 +1,89 @@
 
 import React from 'react';
-import { Github, Linkedin, Heart } from 'lucide-react';
+import { Github, Linkedin, Mail, Heart, Shield } from 'lucide-react';
+import { Button } from './ui/button';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
-
   return (
-    <footer className="bg-background border-t border-border">
+    <footer className="bg-background border-t border-border mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        
-        {/* Main Footer Content */}
-        <div className="grid md:grid-cols-3 gap-8 mb-8">
-          
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-gradient">Fady Fathey Maher</h3>
-            <p className="text-muted-foreground">
-              Frontend Developer crafting modern, responsive web applications with React.js and TypeScript.
+            <h3 className="text-lg font-semibold text-gradient">Fady Fathey</h3>
+            <p className="text-sm text-muted-foreground">
+              Frontend Developer passionate about creating exceptional user experiences with modern web technologies.
             </p>
           </div>
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="font-semibold">Quick Links</h4>
+            <h4 className="text-sm font-semibold uppercase tracking-wider">Quick Links</h4>
             <div className="space-y-2">
-              {[
-                { label: 'About', href: '#about' },
-                { label: 'Projects', href: '#projects' },
-                { label: 'Blog', href: '#blog' },
-                { label: 'Contact', href: '#contact' }
-              ].map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const element = document.querySelector(link.href);
-                    if (element) {
-                      element.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
-                  className="block text-muted-foreground hover:text-foreground transition-colors duration-200"
-                >
-                  {link.label}
-                </a>
-              ))}
+              <a href="#about" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
+                About
+              </a>
+              <a href="#projects" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Projects
+              </a>
+              <a href="#blog" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Blog
+              </a>
+              <a href="#contact" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Contact
+              </a>
             </div>
           </div>
 
-          {/* Contact Info */}
+          {/* Technologies */}
           <div className="space-y-4">
-            <h4 className="font-semibold">Get in Touch</h4>
-            <div className="space-y-2 text-muted-foreground">
-              <p>Cairo, Egypt</p>
-              <a 
-                href="mailto:fadyfathymaher3@gmail.com"
-                className="block hover:text-foreground transition-colors duration-200"
-              >
-                fadyfathymaher3@gmail.com
-              </a>
-              <a 
-                href="tel:+201270644733"
-                className="block hover:text-foreground transition-colors duration-200"
-              >
-                +201270644733
-              </a>
+            <h4 className="text-sm font-semibold uppercase tracking-wider">Technologies</h4>
+            <div className="space-y-2">
+              <span className="block text-sm text-muted-foreground">React.js</span>
+              <span className="block text-sm text-muted-foreground">TypeScript</span>
+              <span className="block text-sm text-muted-foreground">Next.js</span>
+              <span className="block text-sm text-muted-foreground">Tailwind CSS</span>
+            </div>
+          </div>
+
+          {/* Social & Admin */}
+          <div className="space-y-4">
+            <h4 className="text-sm font-semibold uppercase tracking-wider">Connect</h4>
+            <div className="flex flex-col space-y-3">
+              <div className="flex space-x-3">
+                <Button variant="ghost" size="sm" asChild>
+                  <a href="https://github.com/fadyfathey" target="_blank" rel="noopener noreferrer">
+                    <Github className="h-4 w-4" />
+                  </a>
+                </Button>
+                <Button variant="ghost" size="sm" asChild>
+                  <a href="https://linkedin.com/in/fady-fathey" target="_blank" rel="noopener noreferrer">
+                    <Linkedin className="h-4 w-4" />
+                  </a>
+                </Button>
+                <Button variant="ghost" size="sm" asChild>
+                  <a href="mailto:fadyfathymaher3@gmail.com">
+                    <Mail className="h-4 w-4" />
+                  </a>
+                </Button>
+              </div>
+              
+              {/* Admin Access Button */}
+              <Button variant="outline" size="sm" asChild className="w-fit">
+                <Link to="/admin-login">
+                  <Shield className="h-4 w-4 mr-2" />
+                  Admin Access (Only)
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="border-t border-border pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            
-            {/* Copyright */}
-            <div className="flex items-center space-x-2 text-muted-foreground">
-              <span>© {currentYear} Fady Fathey Maher. Made with</span>
-              <Heart className="h-4 w-4 text-red-500 fill-current" />
-              <span>in Cairo, Egypt</span>
-            </div>
-
-            {/* Social Links */}
-            <div className="flex items-center space-x-4">
-              <a
-                href="https://github.com/FadyFathey"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-              >
-                <Github className="h-5 w-5" />
-              </a>
-              <a
-                href="https://www.linkedin.com/in/fady-fathey-maher-72918916b/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-              >
-                <Linkedin className="h-5 w-5" />
-              </a>
-            </div>
-          </div>
+        <div className="border-t border-border mt-8 pt-8 text-center">
+          <p className="text-sm text-muted-foreground flex items-center justify-center">
+            Made with <Heart className="h-4 w-4 mx-1 text-red-500" fill="currentColor" /> by Fady Fathey Maher
+          </p>
         </div>
       </div>
     </footer>

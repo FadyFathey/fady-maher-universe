@@ -9,7 +9,81 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      blogs: {
+        Row: {
+          content: string
+          created_at: string | null
+          excerpt: string
+          id: string
+          image_url: string | null
+          published: boolean | null
+          tags: string[]
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          excerpt: string
+          id?: string
+          image_url?: string | null
+          published?: boolean | null
+          tags?: string[]
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          excerpt?: string
+          id?: string
+          image_url?: string | null
+          published?: boolean | null
+          tags?: string[]
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          created_at: string | null
+          description: string
+          featured: boolean | null
+          github_link: string | null
+          id: string
+          image_url: string | null
+          live_demo_link: string | null
+          tech_stack: string[]
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          featured?: boolean | null
+          github_link?: string | null
+          id?: string
+          image_url?: string | null
+          live_demo_link?: string | null
+          tech_stack?: string[]
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          featured?: boolean | null
+          github_link?: string | null
+          id?: string
+          image_url?: string | null
+          live_demo_link?: string | null
+          tech_stack?: string[]
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

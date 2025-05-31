@@ -1,447 +1,222 @@
-import React, { useState, useMemo } from 'react';
-import { ArrowLeft, Calendar, Tag, Clock, ExternalLink, Search } from 'lucide-react';
+
+import React, { useState } from 'react';
+import { ArrowLeft, Calendar, Tag, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import BlogModal from '@/components/BlogModal';
 import { Link } from 'react-router-dom';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const BlogPage = () => {
-  const [selectedPost, setSelectedPost] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('date');
-
-  const blogPosts = [
-    {
-      title: 'Optimizing React Performance: Tips and Best Practices',
-      description: 'Learn how to optimize your React applications for better performance with practical tips and real-world examples.',
-      fullContent: `React performance optimization is crucial for creating smooth user experiences. In this comprehensive guide, we'll explore various techniques to make your React applications faster and more efficient.
-
-One of the most important concepts is understanding when and why React re-renders components. Every time a component's state or props change, React will re-render that component and its children. This can become expensive when dealing with large component trees.
-
-Here are some key strategies:
-
-1. Use React.memo for functional components to prevent unnecessary re-renders when props haven't changed.
-
-2. Implement useMemo and useCallback hooks to memoize expensive calculations and function references.
-
-3. Code splitting with React.lazy() and Suspense to load components only when needed.
-
-4. Optimize your bundle size by analyzing what's being included and removing unused dependencies.
-
-5. Use the React DevTools Profiler to identify performance bottlenecks in your application.
-
-Remember, premature optimization is the root of all evil. Always measure first, then optimize based on actual performance issues rather than assumptions.`,
-      image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=250&fit=crop',
-      category: 'React',
-      date: '2024-01-15',
-      readTime: '5 min read',
-      tags: ['React', 'Performance', 'Optimization', 'JavaScript'],
-      author: 'Fady Fathey Maher'
-    },
-    {
-      title: 'Modern CSS Techniques for Better UI/UX',
-      description: 'Explore modern CSS features and techniques that can enhance your user interface design and user experience.',
-      fullContent: `CSS has evolved tremendously over the past few years, introducing powerful features that make creating beautiful and responsive interfaces easier than ever.
-
-CSS Grid and Flexbox have revolutionized how we approach layout design. Grid is perfect for two-dimensional layouts, while Flexbox excels at one-dimensional arrangements.
-
-Modern CSS also includes:
-
-CSS Custom Properties (Variables): Create maintainable stylesheets with reusable values that can be updated dynamically.
-
-Container Queries: Style components based on their container size rather than viewport size, enabling truly component-based responsive design.
-
-CSS Logical Properties: Write more internationalization-friendly CSS that adapts to different writing modes and directions.
-
-New Pseudo-classes: :is(), :where(), and :has() provide more powerful and efficient selectors.
-
-Clamp(), Min(), and Max(): Create fluid typography and spacing that adapts to different screen sizes.
-
-Aspect Ratio: Maintain consistent proportions across different screen sizes without JavaScript.
-
-These modern techniques allow us to create more maintainable, performant, and accessible user interfaces.`,
-      image: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=400&h=250&fit=crop',
-      category: 'CSS',
-      date: '2024-01-10',
-      readTime: '7 min read',
-      tags: ['CSS', 'UI/UX', 'Frontend', 'Design'],
-      author: 'Fady Fathey Maher'
-    },
-    {
-      title: 'TypeScript Best Practices for Large Applications',
-      description: 'Discover TypeScript patterns and practices that will help you build maintainable and scalable applications.',
-      fullContent: `TypeScript has become the go-to choice for building large-scale JavaScript applications. Its type system helps catch errors early and makes code more maintainable.
-
-Here are essential best practices for TypeScript in large applications:
-
-Strict Configuration: Always use strict mode in your tsconfig.json to catch more potential issues.
-
-Interface vs Type: Use interfaces for object shapes that might be extended, and type aliases for unions, primitives, and computed types.
-
-Generic Types: Leverage generics to create reusable components and functions while maintaining type safety.
-
-Utility Types: Master built-in utility types like Partial, Pick, Omit, and Record to manipulate types efficiently.
-
-Module Organization: Structure your types in separate files and use barrel exports for clean imports.
-
-Discriminated Unions: Use discriminated unions for handling different states or variants in your application.
-
-Type Guards: Implement type guards to safely narrow types at runtime.
-
-Avoid 'any': Resist the temptation to use 'any' - use 'unknown' or more specific types instead.
-
-These practices will help you build more robust and maintainable TypeScript applications.`,
-      image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=250&fit=crop',
-      category: 'TypeScript',
-      date: '2024-01-05',
-      readTime: '6 min read',
-      tags: ['TypeScript', 'JavaScript', 'Best Practices', 'Development'],
-      author: 'Fady Fathey Maher'
-    },
-    {
-      title: 'Building Responsive Web Applications with Tailwind CSS',
-      description: 'Master responsive design with Tailwind CSS and create beautiful, mobile-first web applications.',
-      fullContent: `Tailwind CSS has revolutionized how we approach styling web applications. Its utility-first approach makes it incredibly easy to build responsive, beautiful interfaces quickly.
-
-Key benefits of Tailwind CSS:
-
-Utility-First Approach: Instead of writing custom CSS, you compose designs using utility classes.
-
-Mobile-First Design: Tailwind encourages mobile-first responsive design with its breakpoint system.
-
-Consistent Design System: Pre-defined spacing, colors, and typography ensure consistency across your application.
-
-Performance Benefits: Only the CSS you use gets included in the final bundle.
-
-Developer Experience: Excellent IntelliSense support and documentation make development faster.
-
-Best practices for responsive design with Tailwind:
-
-1. Start with mobile design and use responsive prefixes (sm:, md:, lg:, xl:) to adapt for larger screens.
-
-2. Use Flexbox and Grid utilities for complex layouts.
-
-3. Leverage container queries with Tailwind's container utilities.
-
-4. Customize your theme in tailwind.config.js to match your design system.
-
-5. Use the @apply directive sparingly for complex component styles.
-
-Tailwind CSS enables rapid prototyping and production-ready applications with minimal custom CSS.`,
-      image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=250&fit=crop',
-      category: 'CSS',
-      date: '2023-12-28',
-      readTime: '8 min read',
-      tags: ['Tailwind CSS', 'Responsive Design', 'CSS', 'Frontend'],
-      author: 'Fady Fathey Maher'
-    },
-    {
-      title: 'State Management in React: Redux vs Context API',
-      description: 'Compare different state management solutions in React and learn when to use each approach.',
-      fullContent: `State management is one of the most important aspects of React development. As applications grow in complexity, choosing the right state management solution becomes crucial.
-
-Redux vs Context API:
-
-Redux:
-- Predictable state updates through reducers
-- Time-travel debugging with Redux DevTools
-- Middleware support for async operations
-- Better for large applications with complex state
-
-Context API:
-- Built into React, no additional dependencies
-- Simpler setup for basic state sharing
-- Perfect for theme, authentication, or user preferences
-- Can cause performance issues with frequent updates
-
-When to use each:
-
-Use Redux when:
-- Your app has complex state logic
-- You need time-travel debugging
-- Multiple components need to update the same state
-- You're working with a large team
-
-Use Context API when:
-- You need simple state sharing
-- The state doesn't change frequently
-- You want to avoid additional dependencies
-- You're building a small to medium application
-
-Modern alternatives like Zustand and Jotai offer simpler APIs while maintaining the benefits of dedicated state management libraries.
-
-The key is to choose the right tool for your specific use case and team requirements.`,
-      image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400&h=250&fit=crop',
-      category: 'React',
-      date: '2023-12-20',
-      readTime: '10 min read',
-      tags: ['React', 'Redux', 'Context API', 'State Management'],
-      author: 'Fady Fathey Maher'
-    },
-    {
-      title: 'Firebase Integration in React Applications',
-      description: 'Learn how to integrate Firebase services into your React applications for authentication, database, and hosting.',
-      fullContent: `Firebase provides a comprehensive platform for building web applications with backend services. Its integration with React makes it an excellent choice for rapid development.
-
-Key Firebase services for React apps:
-
-Authentication: Easy user management with email/password, social logins, and phone authentication.
-
-Firestore Database: NoSQL database with real-time synchronization and offline support.
-
-Storage: File uploads and downloads with security rules.
-
-Hosting: Fast, secure hosting with SSL certificates and global CDN.
-
-Cloud Functions: Serverless backend logic triggered by events.
-
-Integration steps:
-
-1. Install Firebase SDK: npm install firebase
-
-2. Initialize Firebase in your React app with configuration keys.
-
-3. Set up authentication with useAuth hook for user state management.
-
-4. Use Firestore hooks for real-time data synchronization.
-
-5. Implement security rules to protect your data.
-
-Best practices:
-
-- Use Firebase emulator suite for local development
-- Implement proper error handling for network issues
-- Optimize Firestore queries to reduce read costs
-- Use Firebase Security Rules to protect sensitive data
-- Implement offline persistence for better user experience
-
-Firebase accelerates development by providing scalable backend services without the complexity of server management.`,
-      image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=250&fit=crop',
-      category: 'Firebase',
-      date: '2023-12-15',
-      readTime: '9 min read',
-      tags: ['Firebase', 'React', 'Authentication', 'Database'],
-      author: 'Fady Fathey Maher'
-    }
-  ];
-
-  const categories = ['All', ...new Set(blogPosts.map(post => post.category))];
-  
-  // Filter and sort posts
-  const filteredAndSortedPosts = useMemo(() => {
-    let filtered = blogPosts.filter(post => {
-      const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           post.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+  const [selectedPost, setSelectedPost] = useState<any>(null);
+
+  // Fetch published blogs from Supabase
+  const { data: blogs = [], isLoading } = useQuery({
+    queryKey: ['published-blogs'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('blogs')
+        .select('*')
+        .eq('published', true)
+        .order('created_at', { ascending: false });
       
-      const matchesCategory = selectedCategory === 'All' || post.category === selectedCategory;
-      
-      return matchesSearch && matchesCategory;
-    });
-
-    // Sort posts
-    switch (sortBy) {
-      case 'date':
-        return filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
-      case 'title':
-        return filtered.sort((a, b) => a.title.localeCompare(b.title));
-      case 'readTime':
-        return filtered.sort((a, b) => {
-          const aTime = parseInt(a.readTime.split(' ')[0]);
-          const bTime = parseInt(b.readTime.split(' ')[0]);
-          return aTime - bTime;
-        });
-      default:
-        return filtered;
+      if (error) throw error;
+      return data;
     }
-  }, [blogPosts, searchTerm, selectedCategory, sortBy]);
+  });
 
-  const handlePostClick = (post) => {
+  const handlePostClick = (post: any) => {
     setSelectedPost(post);
-    setIsModalOpen(true);
   };
+
+  const handleBackClick = () => {
+    setSelectedPost(null);
+  };
+
+  if (selectedPost) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="pt-20">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <Button 
+              variant="ghost" 
+              onClick={handleBackClick}
+              className="mb-8 hover:bg-accent"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Blog
+            </Button>
+
+            <article className="space-y-8">
+              {selectedPost.image_url && (
+                <div className="relative aspect-video rounded-lg overflow-hidden">
+                  <img
+                    src={selectedPost.image_url}
+                    alt={selectedPost.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+
+              <header className="space-y-4">
+                <h1 className="text-4xl font-bold text-gradient">
+                  {selectedPost.title}
+                </h1>
+                
+                <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                  <div className="flex items-center">
+                    <Calendar className="mr-1 h-4 w-4" />
+                    {new Date(selectedPost.created_at).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </div>
+                  <div className="flex items-center">
+                    <Clock className="mr-1 h-4 w-4" />
+                    5 min read
+                  </div>
+                </div>
+
+                {selectedPost.tags && selectedPost.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedPost.tags.map((tag: string, index: number) => (
+                      <Badge key={index} variant="secondary">
+                        <Tag className="mr-1 h-3 w-3" />
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </header>
+
+              <div className="prose prose-lg max-w-none">
+                <div className="whitespace-pre-wrap leading-relaxed">
+                  {selectedPost.content}
+                </div>
+              </div>
+            </article>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
-              <h1 className="text-3xl font-bold text-gradient">All Blog Posts</h1>
-              <p className="text-muted-foreground">
-                Frontend development insights, tips, and tutorials ({filteredAndSortedPosts.length} posts)
-              </p>
+      <Navigation />
+      
+      <main className="pt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center space-y-4 mb-16">
+            <h1 className="text-4xl sm:text-5xl font-bold text-gradient">
+              Frontend Development Blog
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Insights, tips, and tutorials about modern web development, React.js, 
+              and frontend best practices.
+            </p>
+          </div>
+
+          {isLoading ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <Card key={i} className="animate-pulse">
+                  <CardHeader className="p-0">
+                    <div className="h-48 bg-muted rounded-t-lg"></div>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <div className="h-4 bg-muted rounded mb-2"></div>
+                    <div className="h-4 bg-muted rounded w-2/3"></div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-            <Button variant="outline" asChild>
+          ) : blogs.length === 0 ? (
+            <div className="text-center py-16">
+              <h2 className="text-2xl font-semibold mb-4">No blog posts yet</h2>
+              <p className="text-muted-foreground">Check back soon for new content!</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {blogs.map((post: any, index: number) => (
+                <Card 
+                  key={post.id} 
+                  className="group hover:shadow-lg transition-all duration-300 cursor-pointer"
+                  onClick={() => handlePostClick(post)}
+                >
+                  <CardHeader className="p-0">
+                    {post.image_url ? (
+                      <div className="relative overflow-hidden rounded-t-lg">
+                        <img
+                          src={post.image_url}
+                          alt={post.title}
+                          className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      </div>
+                    ) : (
+                      <div className="h-48 bg-gradient-to-br from-primary/20 to-primary/5 rounded-t-lg flex items-center justify-center">
+                        <div className="text-primary/60 text-6xl font-bold">
+                          {post.title.charAt(0)}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {post.tags && post.tags.length > 0 && (
+                      <div className="absolute top-4 left-4">
+                        <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
+                          <Tag className="h-3 w-3 mr-1" />
+                          {post.tags[0]}
+                        </Badge>
+                      </div>
+                    )}
+                  </CardHeader>
+                  
+                  <CardContent className="p-6 space-y-4">
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-semibold group-hover:text-primary transition-colors duration-200 line-clamp-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
+                        {post.excerpt}
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <div className="flex items-center space-x-1">
+                        <Calendar className="h-3 w-3" />
+                        <span>{new Date(post.created_at).toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric', 
+                          year: 'numeric' 
+                        })}</span>
+                      </div>
+                      <span>5 min read</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          <div className="text-center mt-16">
+            <Button asChild variant="outline">
               <Link to="/">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Portfolio
               </Link>
             </Button>
           </div>
         </div>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-6">
-          {/* Search */}
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Search posts..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
-          {/* Filters */}
-          <div className="flex flex-wrap gap-4 items-center">
-            <div className="flex flex-wrap gap-2">
-              <span className="text-sm font-medium text-muted-foreground">Category:</span>
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedCategory(category)}
-                  className="transition-all duration-200"
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-muted-foreground">Sort by:</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-1 border border-border rounded-md bg-background text-foreground text-sm"
-              >
-                <option value="date">Newest First</option>
-                <option value="title">Title A-Z</option>
-                <option value="readTime">Read Time</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Blog Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        {filteredAndSortedPosts.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground text-lg">No posts found matching your criteria.</p>
-            <Button 
-              variant="outline" 
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedCategory('All');
-              }}
-              className="mt-4"
-            >
-              Clear Filters
-            </Button>
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredAndSortedPosts.map((post, index) => (
-              <Card 
-                key={post.title} 
-                className="group hover:shadow-lg transition-all duration-300 animate-fade-in cursor-pointer"
-                style={{ animationDelay: `${index * 0.1}s` }}
-                onClick={() => handlePostClick(post)}
-              >
-                <CardHeader className="p-0">
-                  <div className="relative overflow-hidden rounded-t-lg">
-                    <img
-                      src={post.image}
-                      alt={post.title}
-                      className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                    <div className="absolute top-4 left-4">
-                      <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
-                        <Tag className="h-3 w-3 mr-1" />
-                        {post.category}
-                      </Badge>
-                    </div>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="p-6 space-y-4">
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-semibold group-hover:text-primary transition-colors duration-200 line-clamp-2">
-                      {post.title}
-                    </h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
-                      {post.description}
-                    </p>
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-1 mb-4">
-                    {post.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                    {post.tags.length > 3 && (
-                      <Badge variant="outline" className="text-xs">
-                        +{post.tags.length - 3}
-                      </Badge>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <div className="flex items-center space-x-1">
-                      <Calendar className="h-3 w-3" />
-                      <span>{new Date(post.date).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric', 
-                        year: 'numeric' 
-                      })}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Clock className="h-3 w-3" />
-                      <span>{post.readTime}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-
-        {/* Blog CTA */}
-        <div className="text-center mt-16">
-          <div className="space-y-4">
-            <h3 className="text-2xl font-bold">Want to read more?</h3>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Visit my blog platform for the latest articles, tutorials, and frontend development insights.
-            </p>
-            <Button asChild size="lg">
-              <a href="https://blogs-v2.vercel.app" target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="h-5 w-5 mr-2" />
-                Visit Full Blog
-              </a>
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Blog Modal */}
-      <BlogModal
-        post={selectedPost}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
+      </main>
+      
+      <Footer />
     </div>
   );
 };
