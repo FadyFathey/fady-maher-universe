@@ -2,21 +2,29 @@
 import React from 'react';
 import { Badge } from './ui/badge';
 import { Card, CardContent } from './ui/card';
+import { useSiteSections } from '@/hooks/useSiteSections';
 
 const About = () => {
+  const { data: sections } = useSiteSections();
+  const aboutSection = sections?.find(s => s.section_key === 'about');
+  
+  // Fallback to original content if no data from database
+  const content = aboutSection?.content || {
+    heading: "About Me",
+    description: "Proficient Frontend Developer with a strong foundation in building responsive, user-centric web applications using React.js and modern JavaScript frameworks. Skilled in optimizing performance, enhancing SEO, and ensuring accessibility compliance.",
+    experience: [{
+      title: "Frontend Developer",
+      company: "Digitalize for Business Services",
+      period: "Jan 2024 - Present",
+      location: "Cairo, Egypt"
+    }],
+    education: "Bachelor's in Commerce, Ain Shams University"
+  };
+
   const technologies = [
     'React.js', 'TypeScript', 'JavaScript', 'Redux', 'Tailwind CSS',
     'HTML5', 'CSS3', 'Bootstrap', 'Angular', 'Firebase', 'Axios',
     'React Router', 'Git', 'Postman', 'Chrome DevTools', 'Jira'
-  ];
-
-  const experience = [
-    {
-      title: 'Frontend Developer',
-      company: 'Digitalize for Business Services',
-      period: 'Jan 2024 - Present',
-      location: 'Cairo, Egypt'
-    }
   ];
 
   return (
@@ -43,12 +51,10 @@ const About = () => {
           <div className="space-y-8 animate-fade-in">
             <div className="space-y-4">
               <h2 className="text-3xl sm:text-4xl font-bold text-gradient">
-                About Me
+                {content.heading}
               </h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Proficient Frontend Developer with a strong foundation in building responsive, 
-                user-centric web applications using React.js and modern JavaScript frameworks. 
-                Skilled in optimizing performance, enhancing SEO, and ensuring accessibility compliance.
+                {content.description}
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Committed to delivering scalable and maintainable solutions that drive client success 
@@ -60,7 +66,7 @@ const About = () => {
             {/* Experience */}
             <div className="space-y-4">
               <h3 className="text-xl font-semibold">Experience</h3>
-              {experience.map((exp, index) => (
+              {content.experience?.map((exp, index) => (
                 <Card key={index} className="border-l-4 border-l-primary">
                   <CardContent className="p-4">
                     <div className="space-y-1">
@@ -79,7 +85,7 @@ const About = () => {
             {/* Education */}
             <div className="space-y-2">
               <h3 className="text-xl font-semibold">Education</h3>
-              <p className="text-muted-foreground">Bachelor's in Commerce, Ain Shams University</p>
+              <p className="text-muted-foreground">{content.education}</p>
               <p className="text-muted-foreground">Web Development Certification (EFE)</p>
             </div>
 

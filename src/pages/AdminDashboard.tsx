@@ -4,16 +4,17 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LogOut, Plus, FileText, FolderOpen, User } from 'lucide-react';
+import { LogOut, Plus, FileText, FolderOpen, User, Layout } from 'lucide-react';
 import AdminProtectedRoute from '@/components/admin/AdminProtectedRoute';
 import ProjectsManager from '@/components/admin/ProjectsManager';
 import BlogsManager from '@/components/admin/BlogsManager';
+import SiteSectionsManager from '@/components/admin/SiteSectionsManager';
 import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('projects');
+  const [activeTab, setActiveTab] = useState('sections');
 
   const handleSignOut = async () => {
     await signOut();
@@ -60,14 +61,18 @@ const AdminDashboard = () => {
               <CardHeader>
                 <CardTitle className="text-2xl">Portfolio Management Dashboard</CardTitle>
                 <p className="text-muted-foreground">
-                  Manage your projects and blog posts. All changes will be reflected on your public portfolio immediately.
+                  Manage your projects, blog posts, and site sections. All changes will be reflected on your public portfolio immediately.
                 </p>
               </CardHeader>
             </Card>
 
             {/* Management Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-2 max-w-md">
+              <TabsList className="grid w-full grid-cols-3 max-w-lg">
+                <TabsTrigger value="sections" className="flex items-center space-x-2">
+                  <Layout className="h-4 w-4" />
+                  <span>Site Sections</span>
+                </TabsTrigger>
                 <TabsTrigger value="projects" className="flex items-center space-x-2">
                   <FolderOpen className="h-4 w-4" />
                   <span>Projects</span>
@@ -77,6 +82,10 @@ const AdminDashboard = () => {
                   <span>Blog Posts</span>
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="sections" className="space-y-6">
+                <SiteSectionsManager />
+              </TabsContent>
 
               <TabsContent value="projects" className="space-y-6">
                 <ProjectsManager />

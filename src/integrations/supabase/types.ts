@@ -84,6 +84,42 @@ export type Database = {
         }
         Relationships: []
       }
+      site_sections: {
+        Row: {
+          content: Json
+          created_at: string | null
+          id: string
+          is_visible: boolean | null
+          section_key: string
+          sort_order: number | null
+          subtitle: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          content?: Json
+          created_at?: string | null
+          id?: string
+          is_visible?: boolean | null
+          section_key: string
+          sort_order?: number | null
+          subtitle?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: Json
+          created_at?: string | null
+          id?: string
+          is_visible?: boolean | null
+          section_key?: string
+          sort_order?: number | null
+          subtitle?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
