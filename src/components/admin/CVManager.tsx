@@ -4,13 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, FileText, ExternalLink } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Upload, FileText, Eye, Download } from 'lucide-react';
 import { useCVSection, useUploadCV } from '@/hooks/useCVManagement';
 
 const CVManager = () => {
   const { data: cvSection, isLoading } = useCVSection();
   const uploadCV = useUploadCV();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -32,7 +34,9 @@ const CVManager = () => {
     return <div>Loading CV management...</div>;
   }
 
-  const currentCVUrl = cvSection?.content?.cv_url;
+  const currentCVUrl = cvSection?.content && typeof cvSection.content === 'object' 
+    ? (cvSection.content as any).cv_url 
+    : null;
 
   return (
     <div className="space-y-6">
@@ -95,14 +99,32 @@ const CVManager = () => {
                   CV is currently available for download on the public site
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <Button variant="outline" asChild>
-                    <a href={currentCVUrl} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Preview Current CV
-                    </a>
-                  </Button>
+                  <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline">
+                        <Eye className="h-4 w-4 mr-2" />
+                        Preview CV
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl w-full h-[80vh]">
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center space-x-2">
+                          <FileText className="h-5 w-5" />
+                          <span>CV Preview</span>
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="flex-1 w-full h-full">
+                        <iframe
+                          src={currentCVUrl}
+                          className="w-full h-full border rounded-lg"
+                          title="CV Preview"
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                   <Button variant="outline" asChild>
                     <a href={currentCVUrl} download>
+                      <Download className="h-4 w-4 mr-2" />
                       Download CV
                     </a>
                   </Button>
