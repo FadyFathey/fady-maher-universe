@@ -12,7 +12,6 @@ const CVManager = () => {
   const { data: cvSection, isLoading } = useCVSection();
   const uploadCV = useUploadCV();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -99,14 +98,14 @@ const CVManager = () => {
                   CV is currently available for download on the public site
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+                  <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="outline">
                         <Eye className="h-4 w-4 mr-2" />
                         Preview CV
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl w-full h-[80vh]">
+                    <DialogContent className="max-w-5xl w-full h-[90vh]">
                       <DialogHeader>
                         <DialogTitle className="flex items-center space-x-2">
                           <FileText className="h-5 w-5" />
@@ -114,18 +113,41 @@ const CVManager = () => {
                         </DialogTitle>
                       </DialogHeader>
                       <div className="flex-1 w-full h-full">
-                        <iframe
-                          src={currentCVUrl}
+                        <object
+                          data={currentCVUrl}
+                          type="application/pdf"
                           className="w-full h-full border rounded-lg"
-                          title="CV Preview"
-                        />
+                          style={{ minHeight: '600px' }}
+                        >
+                          <div className="flex items-center justify-center h-full bg-muted rounded-lg">
+                            <div className="text-center space-y-4">
+                              <p className="text-muted-foreground">
+                                PDF preview not supported in this browser.
+                              </p>
+                              <Button asChild>
+                                <a href={currentCVUrl} target="_blank" rel="noopener noreferrer">
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  Open in New Tab
+                                </a>
+                              </Button>
+                            </div>
+                          </div>
+                        </object>
                       </div>
                     </DialogContent>
                   </Dialog>
+                  
                   <Button variant="outline" asChild>
                     <a href={currentCVUrl} download>
                       <Download className="h-4 w-4 mr-2" />
                       Download CV
+                    </a>
+                  </Button>
+                  
+                  <Button variant="outline" asChild>
+                    <a href={currentCVUrl} target="_blank" rel="noopener noreferrer">
+                      <Eye className="h-4 w-4 mr-2" />
+                      Open in New Tab
                     </a>
                   </Button>
                 </div>

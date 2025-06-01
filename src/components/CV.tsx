@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Button } from './ui/button';
-import { Download } from 'lucide-react';
+import { Download, Eye } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { useSiteSections } from '@/hooks/useSiteSections';
 
 const CV = () => {
@@ -34,8 +35,47 @@ const CV = () => {
             </p>
           </div>
 
-          {/* Download Button */}
-          <div className="flex justify-center">
+          {/* Action Buttons */}
+          <div className="flex justify-center gap-4">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="lg" className="flex items-center space-x-2">
+                  <Eye className="h-5 w-5" />
+                  <span>Preview CV</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-5xl w-full h-[90vh]">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center space-x-2">
+                    <Eye className="h-5 w-5" />
+                    <span>CV Preview</span>
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="flex-1 w-full h-full">
+                  <object
+                    data={cv_url}
+                    type="application/pdf"
+                    className="w-full h-full rounded-lg"
+                    style={{ minHeight: '600px' }}
+                  >
+                    <div className="flex items-center justify-center h-full bg-muted rounded-lg">
+                      <div className="text-center space-y-4">
+                        <p className="text-muted-foreground">
+                          PDF preview not supported in this browser.
+                        </p>
+                        <Button asChild>
+                          <a href={cv_url} target="_blank" rel="noopener noreferrer">
+                            <Eye className="h-4 w-4 mr-2" />
+                            Open in New Tab
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                  </object>
+                </div>
+              </DialogContent>
+            </Dialog>
+
             <Button asChild size="lg" className="flex items-center space-x-2">
               <a href={cv_url} download>
                 <Download className="h-5 w-5" />
@@ -44,16 +84,50 @@ const CV = () => {
             </Button>
           </div>
 
-          {/* CV Preview */}
+          {/* Embedded Preview */}
           <div className="max-w-4xl mx-auto">
             <div className="bg-background rounded-lg border shadow-lg overflow-hidden">
               <div className="aspect-[8.5/11] w-full">
-                <iframe
-                  src={cv_url}
+                <object
+                  data={cv_url}
+                  type="application/pdf"
                   className="w-full h-full"
-                  title="CV Preview"
                   style={{ minHeight: '600px' }}
-                />
+                >
+                  <div className="flex items-center justify-center h-full bg-muted">
+                    <div className="text-center space-y-4">
+                      <p className="text-muted-foreground">
+                        PDF preview not available. Your browser may not support embedded PDFs.
+                      </p>
+                      <div className="flex gap-2 justify-center">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="outline">
+                              <Eye className="h-4 w-4 mr-2" />
+                              Try Modal Preview
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-5xl w-full h-[90vh]">
+                            <DialogHeader>
+                              <DialogTitle>CV Preview</DialogTitle>
+                            </DialogHeader>
+                            <iframe
+                              src={cv_url}
+                              className="w-full h-full border rounded-lg"
+                              title="CV Preview"
+                            />
+                          </DialogContent>
+                        </Dialog>
+                        <Button asChild variant="outline">
+                          <a href={cv_url} target="_blank" rel="noopener noreferrer">
+                            <Eye className="h-4 w-4 mr-2" />
+                            Open in New Tab
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </object>
               </div>
             </div>
           </div>
