@@ -9,6 +9,7 @@ import AdminProtectedRoute from '@/components/admin/AdminProtectedRoute';
 import ProjectsManager from '@/components/admin/ProjectsManager';
 import BlogsManager from '@/components/admin/BlogsManager';
 import SiteSectionsManager from '@/components/admin/SiteSectionsManager';
+import CVManager from '@/components/admin/CVManager';
 import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
@@ -61,17 +62,21 @@ const AdminDashboard = () => {
               <CardHeader>
                 <CardTitle className="text-2xl">Portfolio Management Dashboard</CardTitle>
                 <p className="text-muted-foreground">
-                  Manage your projects, blog posts, and site sections. All changes will be reflected on your public portfolio immediately.
+                  Manage your projects, blog posts, CV, and site sections. All changes will be reflected on your public portfolio immediately.
                 </p>
               </CardHeader>
             </Card>
 
             {/* Management Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3 max-w-lg">
+              <TabsList className="grid w-full grid-cols-4 max-w-2xl">
                 <TabsTrigger value="sections" className="flex items-center space-x-2">
                   <Layout className="h-4 w-4" />
                   <span>Site Sections</span>
+                </TabsTrigger>
+                <TabsTrigger value="cv" className="flex items-center space-x-2">
+                  <FileText className="h-4 w-4" />
+                  <span>CV</span>
                 </TabsTrigger>
                 <TabsTrigger value="projects" className="flex items-center space-x-2">
                   <FolderOpen className="h-4 w-4" />
@@ -85,6 +90,10 @@ const AdminDashboard = () => {
 
               <TabsContent value="sections" className="space-y-6">
                 <SiteSectionsManager />
+              </TabsContent>
+
+              <TabsContent value="cv" className="space-y-6">
+                <CVManager />
               </TabsContent>
 
               <TabsContent value="projects" className="space-y-6">
