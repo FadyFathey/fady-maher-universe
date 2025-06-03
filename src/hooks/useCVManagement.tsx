@@ -47,7 +47,8 @@ export const useUploadCV = () => {
             description: "Download my latest CV to learn more about my professional experience and qualifications.",
             cv_url: urlData.publicUrl,
             show_preview: true,
-            download_text: "Download CV"
+            download_text: "Download CV",
+            google_drive_preview_url: null
           },
           updated_at: new Date().toISOString()
         })
@@ -72,6 +73,38 @@ export const useUploadCV = () => {
         variant: "destructive",
       });
       console.error('CV upload error:', error);
+    }
+  });
+};
+
+export const useUpdateCVSection = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      const { error } = await supabase
+        .from('site_sections')
+        .update({ ...data, updated_at: new Date().toISOString() })
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cv-section'] });
+      queryClient.invalidateQueries({ queryKey: ['site-sections'] });
+      toast({
+        title: "Success",
+        description: "CV section updated successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update CV section",
+        variant: "destructive",
+      });
+      console.error('CV update error:', error);
     }
   });
 };

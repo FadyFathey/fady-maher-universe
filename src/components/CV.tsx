@@ -15,7 +15,7 @@ const CV = () => {
   }
 
   const content = cvSection.content as any;
-  const { heading, description, cv_url, download_text } = content;
+  const { heading, description, cv_url, download_text, google_drive_preview_url } = content;
 
   if (!cv_url) {
     return null;
@@ -38,7 +38,7 @@ const CV = () => {
           {/* CV Preview Card */}
           <div className="max-w-4xl mx-auto">
             <div className="bg-background rounded-lg border shadow-lg overflow-hidden">
-              {/* PDF Preview Container */}
+              {/* CV Preview Container */}
               <div className="relative bg-gray-50 p-8 min-h-[600px] flex flex-col items-center justify-center">
                 <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-8 border-2 border-gray-200">
                   <div className="text-center space-y-6">
@@ -69,46 +69,38 @@ const CV = () => {
                               <span>CV Preview</span>
                             </DialogTitle>
                             <DialogDescription>
-                              View my professional resume below. You can also open it in a new tab or download it directly.
+                              View my professional resume below. You can also download it directly.
                             </DialogDescription>
                           </DialogHeader>
                           
-                          {/* PDF Viewer Container */}
-                          <div className="flex-1 bg-gray-100 rounded-lg overflow-hidden relative">
-                            <iframe
-                              src={`${cv_url}#toolbar=1&navpanes=1&scrollbar=1`}
-                              className="w-full h-full border-0"
-                              title="CV Preview"
-                              loading="lazy"
-                            />
-                            
-                            {/* Fallback for browsers that don't support iframe PDF viewing */}
-                            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 opacity-0 hover:opacity-100 transition-opacity pointer-events-none">
-                              <div className="text-center space-y-4 pointer-events-auto">
-                                <FileText className="h-16 w-16 mx-auto text-gray-400" />
-                                <div className="space-y-2">
-                                  <h4 className="text-lg font-medium text-gray-700">Can't view PDF inline?</h4>
-                                  <p className="text-gray-500">Click below to open in a new tab</p>
+                          {/* Google Drive PDF Viewer */}
+                          <div className="flex-1 bg-gray-100 rounded-lg overflow-hidden">
+                            {google_drive_preview_url ? (
+                              <iframe
+                                src={google_drive_preview_url}
+                                width="100%"
+                                height="100%"
+                                allow="autoplay"
+                                style={{ border: 'none', borderRadius: '12px' }}
+                                title="CV Preview"
+                                className="w-full h-full min-h-[500px]"
+                              />
+                            ) : (
+                              <div className="flex items-center justify-center h-full min-h-[500px]">
+                                <div className="text-center space-y-4">
+                                  <FileText className="h-16 w-16 mx-auto text-gray-400" />
+                                  <div className="space-y-2">
+                                    <h4 className="text-lg font-medium text-gray-700">Preview not available</h4>
+                                    <p className="text-gray-500">Please contact admin to set up preview URL</p>
+                                  </div>
                                 </div>
-                                <Button asChild>
-                                  <a href={cv_url} target="_blank" rel="noopener noreferrer">
-                                    <Eye className="h-4 w-4 mr-2" />
-                                    Open in New Tab
-                                  </a>
-                                </Button>
                               </div>
-                            </div>
+                            )}
                           </div>
                           
-                          {/* Modal Action Buttons */}
-                          <div className="flex gap-3 pt-4 border-t">
-                            <Button asChild variant="outline" className="flex-1">
-                              <a href={cv_url} target="_blank" rel="noopener noreferrer">
-                                <Eye className="h-4 w-4 mr-2" />
-                                Open in New Tab
-                              </a>
-                            </Button>
-                            <Button asChild className="flex-1">
+                          {/* Modal Action Button */}
+                          <div className="flex justify-center pt-4 border-t">
+                            <Button asChild className="w-full max-w-xs">
                               <a href={cv_url} download>
                                 <Download className="h-4 w-4 mr-2" />
                                 {download_text || "Download CV"}
@@ -121,7 +113,7 @@ const CV = () => {
                       <Button asChild size="lg">
                         <a href={cv_url} download>
                           <Download className="h-4 w-4 mr-2" />
-                          {download_text || "Download"}
+                          {download_text || "Download CV"}
                         </a>
                       </Button>
                     </div>
