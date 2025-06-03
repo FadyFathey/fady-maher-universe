@@ -57,6 +57,7 @@ const CV = () => {
                     type="application/pdf"
                     className="w-full h-full rounded-lg"
                     style={{ minHeight: '600px' }}
+                    tabIndex={-1}
                   >
                     <div className="flex items-center justify-center h-full bg-muted rounded-lg">
                       <div className="text-center space-y-4">
@@ -93,6 +94,8 @@ const CV = () => {
                   type="application/pdf"
                   className="w-full h-full"
                   style={{ minHeight: '600px' }}
+                  tabIndex={-1}
+                  aria-label="CV Preview"
                 >
                   <div className="flex items-center justify-center h-full bg-muted">
                     <div className="text-center space-y-4">
@@ -115,10 +118,11 @@ const CV = () => {
                               src={cv_url}
                               className="w-full h-full border rounded-lg"
                               title="CV Preview"
+                              tabIndex={-1}
                             />
                           </DialogContent>
                         </Dialog>
-                        <Button asChild variant="outline">
+                        <Button variant="outline" asChild>
                           <a href={cv_url} target="_blank" rel="noopener noreferrer">
                             <Eye className="h-4 w-4 mr-2" />
                             Open in New Tab
