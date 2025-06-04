@@ -1,20 +1,19 @@
 
 import React from 'react';
-import { Calendar, Tag, Clock, ArrowLeft } from 'lucide-react';
+import { Calendar, Tag, Clock, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 
 interface BlogPost {
+  id: string;
   title: string;
-  description: string;
-  fullContent: string;
-  image: string;
-  category: string;
-  date: string;
-  readTime: string;
+  excerpt: string;
+  content: string;
+  image_url?: string;
   tags: string[];
-  author: string;
+  created_at: string;
+  published: boolean;
 }
 
 interface BlogModalProps {
@@ -35,26 +34,30 @@ const BlogModal = ({ post, isOpen, onClose }: BlogModalProps) => {
         
         <div className="space-y-6">
           {/* Hero Image */}
-          <div className="relative overflow-hidden rounded-lg">
-            <img
-              src={post.image}
-              alt={post.title}
-              className="w-full h-64 object-cover"
-            />
-            <div className="absolute top-4 left-4">
-              <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
-                <Tag className="h-3 w-3 mr-1" />
-                {post.category}
-              </Badge>
+          {post.image_url && (
+            <div className="relative overflow-hidden rounded-lg">
+              <img
+                src={post.image_url}
+                alt={post.title}
+                className="w-full h-64 object-cover"
+              />
+              {post.tags && post.tags.length > 0 && (
+                <div className="absolute top-4 left-4">
+                  <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
+                    <Tag className="h-3 w-3 mr-1" />
+                    {post.tags[0]}
+                  </Badge>
+                </div>
+              )}
             </div>
-          </div>
+          )}
 
           {/* Meta Information */}
           <div className="flex items-center justify-between text-sm text-muted-foreground border-b pb-4">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-1">
                 <Calendar className="h-4 w-4" />
-                <span>{new Date(post.date).toLocaleDateString('en-US', { 
+                <span>{new Date(post.created_at).toLocaleDateString('en-US', { 
                   month: 'long', 
                   day: 'numeric', 
                   year: 'numeric' 
@@ -62,43 +65,29 @@ const BlogModal = ({ post, isOpen, onClose }: BlogModalProps) => {
               </div>
               <div className="flex items-center space-x-1">
                 <Clock className="h-4 w-4" />
-                <span>{post.readTime}</span>
+                <span>{Math.ceil(post.content?.length / 1000) || 1} min read</span>
               </div>
             </div>
-            <span className="text-sm">By {post.author}</span>
           </div>
 
           {/* Tags */}
-          <div className="flex flex-wrap gap-2">
-            {post.tags.map((tag) => (
-              <Badge key={tag} variant="outline" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
+          {post.tags && post.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {post.tags.map((tag) => (
+                <Badge key={tag} variant="outline" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
 
           {/* Content */}
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <div className="space-y-4">
-              {post.fullContent.split('\n\n').map((paragraph, index) => (
-                <p key={index} className="text-muted-foreground leading-relaxed">
-                  {paragraph}
-                </p>
-              ))}
+              <div className="whitespace-pre-wrap leading-relaxed text-muted-foreground">
+                {post.content}
+              </div>
             </div>
-          </div>
-
-          {/* CTA to Full Blog */}
-          <div className="bg-muted/30 rounded-lg p-6 text-center space-y-4">
-            <h3 className="text-lg font-semibold">Want to read more?</h3>
-            <p className="text-muted-foreground">
-              Visit my blog for more articles and tutorials on frontend development.
-            </p>
-            <Button asChild>
-              <a href="https://blogs-v2.vercel.app" target="_blank" rel="noopener noreferrer">
-                Visit My Blog
-              </a>
-            </Button>
           </div>
         </div>
       </DialogContent>
