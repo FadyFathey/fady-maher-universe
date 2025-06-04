@@ -30,8 +30,8 @@ const Navigation = () => {
   const navItems = [
     { label: 'About', href: '#about' },
     { label: 'Technologies', href: '#technologies' },
-    { label: 'Projects', href: '#projects', route: '/projects' },
-    { label: 'Blog', href: '#blog', route: '/blog' },
+    { label: 'Projects', href: '#projects', route: '#projects' },
+    { label: 'Blog', href: '#blog', route: '#blog' },
     { label: 'CV', href: cvUrl, isDownload: true },
     { label: 'Contact', href: '#contact' }
   ];
