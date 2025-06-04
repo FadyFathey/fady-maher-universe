@@ -1,199 +1,225 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useCVSection, useUpdateCVSection, useUploadCV } from '@/hooks/useCVManagement';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Upload, FileText, Eye, Download, Link } from 'lucide-react';
-import { useCVSection, useUploadCV, useUpdateCVSection } from '@/hooks/useCVManagement';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FileText, Upload, Loader2, Save } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const CVManager = () => {
   const { data: cvSection, isLoading } = useCVSection();
-  const uploadCV = useUploadCV();
   const updateCVSection = useUpdateCVSection();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [googleDriveUrl, setGoogleDriveUrl] = useState('');
+  const uploadCV = useUploadCV();
+  const { toast } = useToast();
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && file.type === 'application/pdf') {
-      setSelectedFile(file);
-    } else {
-      alert('Please select a PDF file');
-    }
-  };
+  const [formData, setFormData] = useState({
+    heading: '',
+    description: '',
+    cv_url: '',
+    download_text: '',
+    google_drive_preview_url: ''
+  });
 
-  const handleUpload = () => {
-    if (selectedFile) {
-      uploadCV.mutate(selectedFile);
-      setSelectedFile(null);
-    }
-  };
+  const [hasChanges, setHasChanges] = useState(false);
 
-  const handleUpdateGoogleDriveUrl = () => {
-    if (cvSection && googleDriveUrl.trim()) {
-      const updatedContent = {
-        ...cvSection.content,
-        google_drive_preview_url: googleDriveUrl.trim()
-      };
-      
-      updateCVSection.mutate({
-        id: cvSection.id,
-        data: { content: updatedContent }
+  React.useEffect(() => {
+    if (cvSection?.content) {
+      const content = cvSection.content as any;
+      setFormData({
+        heading: content.heading || '',
+        description: content.description || '',
+        cv_url: content.cv_url || '',
+        download_text: content.download_text || '',
+        google_drive_preview_url: content.google_drive_preview_url || ''
       });
-      
-      setGoogleDriveUrl('');
+    }
+  }, [cvSection]);
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    setHasChanges(true);
+  };
+
+  const handleSave = async () => {
+    if (!cvSection) return;
+
+    try {
+      await updateCVSection.mutateAsync({
+        id: cvSection.id,
+        data: {
+          content: formData,
+          updated_at: new Date().toISOString()
+        }
+      });
+      setHasChanges(false);
+    } catch (error) {
+      console.error('Error updating CV section:', error);
+    }
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      toast({
+        title: "Error",
+        description: "Please upload a PDF file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await uploadCV.mutateAsync(file);
+    } catch (error) {
+      console.error('Error uploading CV:', error);
     }
   };
 
   if (isLoading) {
-    return <div>Loading CV management...</div>;
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </CardContent>
+      </Card>
+    );
   }
-
-  const currentCVUrl = cvSection?.content && typeof cvSection.content === 'object' 
-    ? (cvSection.content as any).cv_url 
-    : null;
-
-  const currentGoogleDriveUrl = cvSection?.content && typeof cvSection.content === 'object' 
-    ? (cvSection.content as any).google_drive_preview_url 
-    : null;
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">CV Management</h2>
-        <p className="text-muted-foreground">
-          Upload and manage your CV file and preview settings
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">CV Management</h2>
+          <p className="text-muted-foreground">Manage your CV section content and file</p>
+        </div>
+        {hasChanges && (
+          <Button onClick={handleSave} disabled={updateCVSection.isPending}>
+            {updateCVSection.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Save className="mr-2 h-4 w-4" />
+            Save Changes
+          </Button>
+        )}
       </div>
 
-      <div className="grid gap-6">
-        {/* Upload Section */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Content Form */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Upload className="h-5 w-5" />
-              <span>Upload New CV</span>
-            </CardTitle>
+            <CardTitle>CV Section Content</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="cv-file">Select PDF File</Label>
+              <Label htmlFor="heading">Section Heading</Label>
+              <Input
+                id="heading"
+                value={formData.heading}
+                onChange={(e) => handleInputChange('heading', e.target.value)}
+                placeholder="My Resume"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+                placeholder="Download my latest CV to learn more about my professional experience..."
+                rows={3}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="download_text">Download Button Text</Label>
+              <Input
+                id="download_text"
+                value={formData.download_text}
+                onChange={(e) => handleInputChange('download_text', e.target.value)}
+                placeholder="Download CV"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="cv_url">CV Download URL</Label>
+              <Input
+                id="cv_url"
+                value={formData.cv_url}
+                onChange={(e) => handleInputChange('cv_url', e.target.value)}
+                placeholder="https://..."
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="google_drive_preview_url">Google Drive Preview URL</Label>
+              <Input
+                id="google_drive_preview_url"
+                value={formData.google_drive_preview_url}
+                onChange={(e) => handleInputChange('google_drive_preview_url', e.target.value)}
+                placeholder="https://drive.google.com/file/d/FILE_ID/preview"
+              />
+              <p className="text-xs text-muted-foreground">
+                Use format: https://drive.google.com/file/d/YOUR_FILE_ID/preview
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* File Upload */}
+        <Card>
+          <CardHeader>
+            <CardTitle>CV File Upload</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="cv-file">Upload New CV (PDF)</Label>
               <Input
                 id="cv-file"
                 type="file"
                 accept=".pdf"
-                onChange={handleFileSelect}
+                onChange={handleFileUpload}
+                disabled={uploadCV.isPending}
               />
+              {uploadCV.isPending && (
+                <p className="text-sm text-muted-foreground flex items-center">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Uploading CV...
+                </p>
+              )}
             </div>
-            
-            {selectedFile && (
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <FileText className="h-4 w-4" />
-                <span>{selectedFile.name}</span>
-              </div>
-            )}
 
-            <Button 
-              onClick={handleUpload} 
-              disabled={!selectedFile || uploadCV.isPending}
-              className="w-full"
-            >
-              {uploadCV.isPending ? 'Uploading...' : 'Upload CV'}
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Google Drive Preview URL Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Link className="h-5 w-5" />
-              <span>Google Drive Preview URL</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="google-drive-url">
-                Google Drive Preview URL (format: https://drive.google.com/file/d/FILE_ID/preview)
-              </Label>
-              <Input
-                id="google-drive-url"
-                type="url"
-                placeholder="https://drive.google.com/file/d/1sGA6FxUt946ANMO33Utc9x5uYKcZDF9t/preview"
-                value={googleDriveUrl}
-                onChange={(e) => setGoogleDriveUrl(e.target.value)}
-              />
-            </div>
-            
-            {currentGoogleDriveUrl && (
-              <div className="text-sm text-muted-foreground">
-                Current URL: {currentGoogleDriveUrl}
-              </div>
-            )}
-
-            <Button 
-              onClick={handleUpdateGoogleDriveUrl} 
-              disabled={!googleDriveUrl.trim() || updateCVSection.isPending}
-              variant="outline"
-              className="w-full"
-            >
-              {updateCVSection.isPending ? 'Updating...' : 'Update Preview URL'}
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Current CV Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <FileText className="h-5 w-5" />
-              <span>Current CV</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {currentCVUrl ? (
-              <>
-                <div className="text-sm text-muted-foreground">
-                  CV is currently available for download on the public site
-                </div>
-                
-                {/* CV Preview Card */}
-                <div className="border rounded-lg p-4 bg-muted/50">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded flex items-center justify-center">
-                      <FileText className="h-6 w-6 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium">Current CV</h4>
-                      <p className="text-sm text-muted-foreground">PDF Document</p>
-                      {currentGoogleDriveUrl && (
-                        <p className="text-xs text-green-600">Preview URL configured</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col space-y-2">
-                  <Button variant="outline" asChild>
-                    <a href={currentCVUrl} download>
-                      <Download className="h-4 w-4 mr-2" />
-                      Download CV
-                    </a>
-                  </Button>
-                  
-                  <Button variant="outline" asChild>
-                    <a href={currentCVUrl} target="_blank" rel="noopener noreferrer">
-                      <Eye className="h-4 w-4 mr-2" />
-                      Open in New Tab
+            {formData.cv_url && (
+              <div className="space-y-2">
+                <Label>Current CV File</Label>
+                <div className="flex items-center space-x-2 p-2 border rounded">
+                  <FileText className="h-4 w-4" />
+                  <span className="text-sm flex-1">CV File Available</span>
+                  <Button variant="outline" size="sm" asChild>
+                    <a href={formData.cv_url} target="_blank" rel="noopener noreferrer">
+                      View
                     </a>
                   </Button>
                 </div>
-              </>
-            ) : (
-              <div className="text-sm text-muted-foreground">
-                No CV uploaded yet. Upload a PDF file to make it available on your portfolio.
+              </div>
+            )}
+
+            {formData.google_drive_preview_url && (
+              <div className="space-y-2">
+                <Label>Preview</Label>
+                <div className="border rounded-lg overflow-hidden">
+                  <iframe
+                    src={formData.google_drive_preview_url}
+                    width="100%"
+                    height="300"
+                    allow="autoplay"
+                    style={{ border: 'none' }}
+                    title="CV Preview"
+                  />
+                </div>
               </div>
             )}
           </CardContent>
