@@ -1,11 +1,17 @@
+
 import React, { useState, useEffect } from 'react';
 import { Moon, Sun, Menu, X } from 'lucide-react';
 import { Button } from './ui/button';
+import { useSiteSections } from '@/hooks/useSiteSections';
 
 const Navigation = () => {
   const [isDark, setIsDark] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { data: sections } = useSiteSections();
+
+  const cvSection = sections?.find(section => section.section_key === 'cv');
+  const cvUrl = cvSection?.content ? (cvSection.content as any).cv_url : null;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,10 +32,23 @@ const Navigation = () => {
     { label: 'Technologies', href: '#technologies' },
     { label: 'Projects', href: '#projects', route: '/projects' },
     { label: 'Blog', href: '#blog', route: '/blog' },
+    { label: 'CV', href: cvUrl, isDownload: true },
     { label: 'Contact', href: '#contact' }
   ];
 
-  const scrollToSection = (href: string, route?: string) => {
+  const scrollToSection = (href: string, route?: string, isDownload?: boolean) => {
+    if (isDownload && href) {
+      // Direct download
+      const link = document.createElement('a');
+      link.href = href;
+      link.download = '';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setIsMenuOpen(false);
+      return;
+    }
+    
     if (route) {
       window.location.href = route;
       return;
@@ -65,9 +84,12 @@ const Navigation = () => {
                   key={item.label}
                   href={item.route || item.href}
                   onClick={(e) => {
-                    if (!item.route) {
+                    if (!item.route && !item.isDownload) {
                       e.preventDefault();
                       scrollToSection(item.href);
+                    } else if (item.isDownload) {
+                      e.preventDefault();
+                      scrollToSection(item.href, item.route, item.isDownload);
                     }
                   }}
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200 font-medium"
@@ -111,9 +133,12 @@ const Navigation = () => {
                   key={item.label}
                   href={item.route || item.href}
                   onClick={(e) => {
-                    if (!item.route) {
+                    if (!item.route && !item.isDownload) {
                       e.preventDefault();
                       scrollToSection(item.href);
+                    } else if (item.isDownload) {
+                      e.preventDefault();
+                      scrollToSection(item.href, item.route, item.isDownload);
                     } else {
                       setIsMenuOpen(false);
                     }
