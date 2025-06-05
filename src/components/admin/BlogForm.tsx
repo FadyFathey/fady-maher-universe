@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -106,8 +105,11 @@ const BlogForm: React.FC<BlogFormProps> = ({ isOpen, onClose, blog }) => {
       }
     },
     onSuccess: () => {
+      // Invalidate all relevant query keys to ensure fresh data
       queryClient.invalidateQueries({ queryKey: ['admin-blogs'] });
       queryClient.invalidateQueries({ queryKey: ['published-blogs'] });
+      queryClient.invalidateQueries({ queryKey: ['published-blogs', 'with-display-order'] });
+      queryClient.invalidateQueries({ queryKey: ['published-blogs', 'blog-page', 'with-display-order'] });
       toast({
         title: "Success",
         description: blog ? "Blog post updated successfully" : "Blog post created successfully",

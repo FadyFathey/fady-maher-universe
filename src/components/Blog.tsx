@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowRight, Calendar, Tag } from 'lucide-react';
 import { Button } from './ui/button';
@@ -13,9 +12,9 @@ const Blog = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fetch published blogs from the database
+  // Fetch published blogs from the database with updated query key
   const { data: blogPosts = [], isLoading } = useQuery({
-    queryKey: ['published-blogs'],
+    queryKey: ['published-blogs', 'with-display-order'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('blogs')
@@ -37,7 +36,9 @@ const Blog = () => {
         // If neither has display_order, sort by created_at (newest first)
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       });
-    }
+    },
+    // Reduce stale time to ensure fresher data
+    staleTime: 30000, // 30 seconds
   });
 
   const handlePostClick = (post) => {

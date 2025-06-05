@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -109,8 +108,10 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ isOpen, onClose, project }) =
       }
     },
     onSuccess: () => {
+      // Invalidate all relevant query keys to ensure fresh data
       queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
       queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['projects', 'with-display-order'] });
       toast({
         title: "Success",
         description: project ? "Project updated successfully" : "Project created successfully",

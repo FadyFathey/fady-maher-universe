@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ExternalLink, Github, ArrowRight } from 'lucide-react';
 import { Button } from './ui/button';
@@ -13,9 +12,9 @@ const Projects = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fetch projects from the database
+  // Fetch projects from the database with updated query key
   const { data: projects = [], isLoading } = useQuery({
-    queryKey: ['projects'],
+    queryKey: ['projects', 'with-display-order'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
@@ -24,7 +23,9 @@ const Projects = () => {
       
       if (error) throw error;
       return data;
-    }
+    },
+    // Reduce stale time to ensure fresher data
+    staleTime: 30000, // 30 seconds
   });
 
   // Sort projects by display_order, then by created_at

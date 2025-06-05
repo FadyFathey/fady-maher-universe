@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft, Calendar, Tag, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,19 +12,32 @@ import { supabase } from '@/integrations/supabase/client';
 const BlogPage = () => {
   const [selectedPost, setSelectedPost] = useState<any>(null);
 
-  // Fetch published blogs from Supabase
+  // Fetch published blogs from Supabase with updated query key and display order sorting
   const { data: blogs = [], isLoading } = useQuery({
-    queryKey: ['published-blogs'],
+    queryKey: ['published-blogs', 'blog-page', 'with-display-order'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('blogs')
         .select('*')
-        .eq('published', true)
-        .order('created_at', { ascending: false });
+        .eq('published', true);
       
       if (error) throw error;
-      return data;
-    }
+      
+      // Sort by display_order, then by created_at
+      return data.sort((a, b) => {
+        // If both have display_order, sort by that
+        if (a.display_order !== null && b.display_order !== null) {
+          return a.display_order - b.display_order;
+        }
+        // If only one has display_order, that one comes first
+        if (a.display_order !== null) return -1;
+        if (b.display_order !== null) return 1;
+        // If neither has display_order, sort by created_at (newest first)
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+    },
+    // Reduce stale time to ensure fresher data
+    staleTime: 30000, // 30 seconds
   });
 
   const handlePostClick = (post: any) => {
