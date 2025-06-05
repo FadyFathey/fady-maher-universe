@@ -25,6 +25,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ isOpen, onClose, project }) =
     github_link: '',
     live_demo_link: '',
     featured: false,
+    display_order: '',
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
@@ -42,6 +43,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ isOpen, onClose, project }) =
         github_link: project.github_link || '',
         live_demo_link: project.live_demo_link || '',
         featured: project.featured || false,
+        display_order: project.display_order ? project.display_order.toString() : '',
       });
       setImagePreview(project.image_url || '');
     } else {
@@ -52,6 +54,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ isOpen, onClose, project }) =
         github_link: '',
         live_demo_link: '',
         featured: false,
+        display_order: '',
       });
       setImagePreview('');
     }
@@ -89,6 +92,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ isOpen, onClose, project }) =
         ...data,
         tech_stack: data.tech_stack.split(',').map((tech: string) => tech.trim()).filter(Boolean),
         image_url: imageUrl,
+        display_order: data.display_order ? parseInt(data.display_order) : null,
       };
 
       if (project) {
@@ -202,6 +206,18 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ isOpen, onClose, project }) =
               value={formData.live_demo_link}
               onChange={(e) => setFormData({ ...formData, live_demo_link: e.target.value })}
               placeholder="https://your-project.com"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="display_order">Display Order (optional)</Label>
+            <Input
+              id="display_order"
+              type="number"
+              value={formData.display_order}
+              onChange={(e) => setFormData({ ...formData, display_order: e.target.value })}
+              placeholder="1, 2, 3... (lower numbers appear first)"
+              min="1"
             />
           </div>
 

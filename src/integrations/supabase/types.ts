@@ -13,6 +13,7 @@ export type Database = {
         Row: {
           content: string
           created_at: string | null
+          display_order: number | null
           excerpt: string
           id: string
           image_url: string | null
@@ -24,6 +25,7 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string | null
+          display_order?: number | null
           excerpt: string
           id?: string
           image_url?: string | null
@@ -35,6 +37,7 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string | null
+          display_order?: number | null
           excerpt?: string
           id?: string
           image_url?: string | null
@@ -49,6 +52,7 @@ export type Database = {
         Row: {
           created_at: string | null
           description: string
+          display_order: number | null
           featured: boolean | null
           github_link: string | null
           id: string
@@ -61,6 +65,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           description: string
+          display_order?: number | null
           featured?: boolean | null
           github_link?: string | null
           id?: string
@@ -73,6 +78,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           description?: string
+          display_order?: number | null
           featured?: boolean | null
           github_link?: string | null
           id?: string

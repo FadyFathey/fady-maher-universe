@@ -24,6 +24,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ isOpen, onClose, blog }) => {
     content: '',
     tags: '',
     published: false,
+    display_order: '',
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
@@ -40,6 +41,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ isOpen, onClose, blog }) => {
         content: blog.content || '',
         tags: blog.tags ? blog.tags.join(', ') : '',
         published: blog.published || false,
+        display_order: blog.display_order ? blog.display_order.toString() : '',
       });
       setImagePreview(blog.image_url || '');
     } else {
@@ -49,6 +51,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ isOpen, onClose, blog }) => {
         content: '',
         tags: '',
         published: false,
+        display_order: '',
       });
       setImagePreview('');
     }
@@ -86,6 +89,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ isOpen, onClose, blog }) => {
         ...data,
         tags: data.tags.split(',').map((tag: string) => tag.trim()).filter(Boolean),
         image_url: imageUrl,
+        display_order: data.display_order ? parseInt(data.display_order) : null,
       };
 
       if (blog) {
@@ -189,6 +193,18 @@ const BlogForm: React.FC<BlogFormProps> = ({ isOpen, onClose, blog }) => {
               value={formData.tags}
               onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
               placeholder="React, TypeScript, Frontend"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="display_order">Display Order (optional)</Label>
+            <Input
+              id="display_order"
+              type="number"
+              value={formData.display_order}
+              onChange={(e) => setFormData({ ...formData, display_order: e.target.value })}
+              placeholder="1, 2, 3... (lower numbers appear first)"
+              min="1"
             />
           </div>
 

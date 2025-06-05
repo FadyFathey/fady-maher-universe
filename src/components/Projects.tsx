@@ -27,8 +27,23 @@ const Projects = () => {
     }
   });
 
-  const featuredProjects = projects.filter(p => p.featured);
-  const otherProjects = projects.filter(p => !p.featured);
+  // Sort projects by display_order, then by created_at
+  const sortProjects = (projectList: any[]) => {
+    return projectList.sort((a, b) => {
+      // If both have display_order, sort by that
+      if (a.display_order !== null && b.display_order !== null) {
+        return a.display_order - b.display_order;
+      }
+      // If only one has display_order, that one comes first
+      if (a.display_order !== null) return -1;
+      if (b.display_order !== null) return 1;
+      // If neither has display_order, sort by created_at (newest first)
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+  };
+
+  const featuredProjects = sortProjects(projects.filter(p => p.featured));
+  const otherProjects = sortProjects(projects.filter(p => !p.featured));
 
   const handleProjectClick = (project) => {
     setSelectedProject(project);

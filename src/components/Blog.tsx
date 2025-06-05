@@ -21,11 +21,22 @@ const Blog = () => {
         .from('blogs')
         .select('*')
         .eq('published', true)
-        .order('created_at', { ascending: false })
         .limit(6); // Show only 6 posts on homepage
       
       if (error) throw error;
-      return data;
+      
+      // Sort by display_order, then by created_at
+      return data.sort((a, b) => {
+        // If both have display_order, sort by that
+        if (a.display_order !== null && b.display_order !== null) {
+          return a.display_order - b.display_order;
+        }
+        // If only one has display_order, that one comes first
+        if (a.display_order !== null) return -1;
+        if (b.display_order !== null) return 1;
+        // If neither has display_order, sort by created_at (newest first)
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
     }
   });
 
