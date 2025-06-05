@@ -3,6 +3,7 @@ import { ExternalLink, Github, ArrowRight } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from './ui/card';
 import { Badge } from './ui/badge';
+import { OptimizedImage } from './ui/optimized-image';
 import ProjectModal from './ProjectModal';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -170,11 +171,11 @@ const Projects = () => {
                   <div className="relative group">
                     <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
                       {project.image_url ? (
-                        <img
+                        <OptimizedImage
                           src={project.image_url}
                           alt={project.title}
                           className="w-full h-64 lg:h-80 object-cover transition-transform duration-500 group-hover:scale-105"
-                          loading="lazy"
+                          fallbackContent={<span className="text-muted-foreground">No image available</span>}
                         />
                       ) : (
                         <div className="w-full h-64 lg:h-80 flex items-center justify-center bg-muted">
@@ -205,11 +206,11 @@ const Projects = () => {
                   <CardHeader className="p-0">
                     <div className="relative overflow-hidden rounded-t-lg">
                       {project.image_url ? (
-                        <img
+                        <OptimizedImage
                           src={project.image_url}
                           alt={project.title}
                           className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-                          loading="lazy"
+                          fallbackContent={<span className="text-muted-foreground text-sm">No image available</span>}
                         />
                       ) : (
                         <div className="w-full h-48 flex items-center justify-center bg-muted">

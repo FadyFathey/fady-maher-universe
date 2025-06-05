@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft, ExternalLink, Github, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -53,10 +53,11 @@ const ProjectsPage = () => {
             <div className="space-y-8">
               {selectedProject.image_url && (
                 <div className="relative aspect-video rounded-lg overflow-hidden">
-                  <img
+                  <OptimizedImage
                     src={selectedProject.image_url}
                     alt={selectedProject.title}
                     className="w-full h-full object-cover"
+                    fallbackContent={<span className="text-muted-foreground">Image unavailable</span>}
                   />
                 </div>
               )}
@@ -171,11 +172,17 @@ const ProjectsPage = () => {
                   <CardHeader className="p-0">
                     {project.image_url ? (
                       <div className="relative overflow-hidden rounded-t-lg">
-                        <img
+                        <OptimizedImage
                           src={project.image_url}
                           alt={project.title}
                           className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-                          loading="lazy"
+                          fallbackContent={
+                            <div className="h-48 bg-gradient-to-br from-primary/20 to-primary/5 rounded-t-lg flex items-center justify-center">
+                              <div className="text-primary/60 text-6xl font-bold">
+                                {project.title.charAt(0)}
+                              </div>
+                            </div>
+                          }
                         />
                       </div>
                     ) : (

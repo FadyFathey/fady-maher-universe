@@ -4,6 +4,7 @@ import { Calendar, Tag, Clock, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { OptimizedImage } from './ui/optimized-image';
 
 interface BlogPost {
   id: string;
@@ -33,13 +34,13 @@ const BlogModal = ({ post, isOpen, onClose }: BlogModalProps) => {
         </DialogHeader>
         
         <div className="space-y-6">
-          {/* Hero Image */}
           {post.image_url && (
             <div className="relative overflow-hidden rounded-lg">
-              <img
+              <OptimizedImage
                 src={post.image_url}
                 alt={post.title}
                 className="w-full h-64 object-cover"
+                fallbackContent={<span className="text-muted-foreground">Image unavailable</span>}
               />
               {post.tags && post.tags.length > 0 && (
                 <div className="absolute top-4 left-4">
@@ -52,7 +53,6 @@ const BlogModal = ({ post, isOpen, onClose }: BlogModalProps) => {
             </div>
           )}
 
-          {/* Meta Information */}
           <div className="flex items-center justify-between text-sm text-muted-foreground border-b pb-4">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-1">
@@ -70,7 +70,6 @@ const BlogModal = ({ post, isOpen, onClose }: BlogModalProps) => {
             </div>
           </div>
 
-          {/* Tags */}
           {post.tags && post.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {post.tags.map((tag) => (
@@ -81,7 +80,6 @@ const BlogModal = ({ post, isOpen, onClose }: BlogModalProps) => {
             </div>
           )}
 
-          {/* Content */}
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <div className="space-y-4">
               <div className="whitespace-pre-wrap leading-relaxed text-muted-foreground">

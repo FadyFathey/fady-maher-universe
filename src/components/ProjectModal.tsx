@@ -4,6 +4,7 @@ import { Github, ExternalLink, Calendar } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { OptimizedImage } from './ui/optimized-image';
 
 interface Project {
   id: string;
@@ -34,18 +35,17 @@ const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) => {
         </DialogHeader>
         
         <div className="space-y-6">
-          {/* Main Image */}
           {project.image_url && (
             <div className="relative overflow-hidden rounded-lg">
-              <img
+              <OptimizedImage
                 src={project.image_url}
                 alt={project.title}
                 className="w-full h-64 object-cover"
+                fallbackContent={<span className="text-muted-foreground">Image unavailable</span>}
               />
             </div>
           )}
 
-          {/* Meta Information */}
           <div className="flex items-center text-sm text-muted-foreground border-b pb-4">
             <div className="flex items-center">
               <Calendar className="mr-1 h-4 w-4" />
@@ -56,7 +56,6 @@ const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) => {
             </div>
           </div>
 
-          {/* Technologies */}
           <div className="flex flex-wrap gap-2">
             {project.tech_stack.map((tech) => (
               <Badge key={tech} variant="outline">
@@ -65,7 +64,6 @@ const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) => {
             ))}
           </div>
 
-          {/* Description */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Project Overview</h3>
             <p className="text-muted-foreground leading-relaxed">
@@ -73,7 +71,6 @@ const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) => {
             </p>
           </div>
 
-          {/* Actions */}
           <div className="flex items-center space-x-4 pt-4 border-t">
             {project.github_link && (
               <Button variant="outline" asChild>
