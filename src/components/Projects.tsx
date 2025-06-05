@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ExternalLink, Github, ArrowRight } from 'lucide-react';
 import { Button } from './ui/button';
@@ -180,7 +181,11 @@ const Projects = () => {
             <h3 className="text-2xl font-bold text-center">Other Projects</h3>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {otherProjects.map((project) => (
-                <Card key={project.id} className="group hover:shadow-lg transition-all duration-300 animate-scale-in">
+                <Card 
+                  key={project.id} 
+                  className="group hover:shadow-lg transition-all duration-300 animate-scale-in cursor-pointer"
+                  onClick={() => handleProjectClick(project)}
+                >
                   <CardHeader className="p-0">
                     <div className="relative overflow-hidden rounded-t-lg">
                       {project.image_url ? (
@@ -219,14 +224,23 @@ const Projects = () => {
 
                   <CardFooter className="p-6 pt-0 flex justify-between">
                     {project.github_link && (
-                      <Button variant="outline" size="sm" asChild>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        asChild
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <a href={project.github_link} target="_blank" rel="noopener noreferrer">
                           <Github className="h-4 w-4" />
                         </a>
                       </Button>
                     )}
                     {project.live_demo_link && (
-                      <Button size="sm" asChild>
+                      <Button 
+                        size="sm" 
+                        asChild
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <a href={project.live_demo_link} target="_blank" rel="noopener noreferrer">
                           <ExternalLink className="h-4 w-4" />
                         </a>
