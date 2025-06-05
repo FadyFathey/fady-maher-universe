@@ -33,7 +33,8 @@ const Navigation = () => {
     { label: 'Projects', href: '#projects', route: '#projects' },
     { label: 'Blog', href: '#blog', route: '#blog' },
     { label: 'CV', href: cvUrl, isDownload: true },
-    { label: 'Contact', href: '#contact' }
+    { label: 'Contact', href: '#contact' },
+     { label: 'Admin Access (Only)', href: '/admin-login', route: '/admin-login' }
   ];
 
   const scrollToSection = (href: string, route?: string, isDownload?: boolean) => {
