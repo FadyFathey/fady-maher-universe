@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Calendar, Tag, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -42,6 +42,24 @@ const BlogPage = () => {
     // Reduce stale time to ensure fresher data
     staleTime: 30000, // 30 seconds
   });
+
+  // Track views when a blog post is selected
+  useEffect(() => {
+    if (selectedPost?.id) {
+      const trackView = async () => {
+        try {
+          await supabase.rpc('increment_blog_view', { 
+            blog_id: selectedPost.id 
+          });
+          console.log('Blog view tracked:', selectedPost.id);
+        } catch (error) {
+          console.error('Error tracking blog view:', error);
+        }
+      };
+      
+      trackView();
+    }
+  }, [selectedPost?.id]);
 
   const handlePostClick = (post: any) => {
     setSelectedPost(post);

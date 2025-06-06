@@ -21,6 +21,7 @@ export type Database = {
           tags: string[]
           title: string
           updated_at: string | null
+          views: number
         }
         Insert: {
           content: string
@@ -33,6 +34,7 @@ export type Database = {
           tags?: string[]
           title: string
           updated_at?: string | null
+          views?: number
         }
         Update: {
           content?: string
@@ -45,6 +47,7 @@ export type Database = {
           tags?: string[]
           title?: string
           updated_at?: string | null
+          views?: number
         }
         Relationships: []
       }
@@ -61,6 +64,7 @@ export type Database = {
           tech_stack: string[]
           title: string
           updated_at: string | null
+          views: number
         }
         Insert: {
           created_at?: string | null
@@ -74,6 +78,7 @@ export type Database = {
           tech_stack?: string[]
           title: string
           updated_at?: string | null
+          views?: number
         }
         Update: {
           created_at?: string | null
@@ -87,6 +92,7 @@ export type Database = {
           tech_stack?: string[]
           title?: string
           updated_at?: string | null
+          views?: number
         }
         Relationships: []
       }
@@ -131,7 +137,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_blog_view: {
+        Args: { blog_id: string }
+        Returns: undefined
+      }
+      increment_project_view: {
+        Args: { project_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

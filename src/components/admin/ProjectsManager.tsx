@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, ExternalLink, Github, Calendar } from 'lucide-react';
+import { Plus, Edit, Trash2, ExternalLink, Github, Calendar, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ProjectForm from './ProjectForm';
 
@@ -132,6 +132,10 @@ const ProjectsManager = () => {
                       <div className="flex items-center">
                         <Calendar className="h-3 w-3 mr-1" />
                         {new Date(project.created_at).toLocaleDateString()}
+                      </div>
+                      <div className="flex items-center">
+                        <Eye className="h-3 w-3 mr-1" />
+                        {project.views || 0} views
                       </div>
                       {project.featured && (
                         <Badge variant="secondary">Featured</Badge>

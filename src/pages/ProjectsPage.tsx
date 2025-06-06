@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ExternalLink, Github, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -26,6 +26,24 @@ const ProjectsPage = () => {
       return data;
     }
   });
+
+  // Track views when a project is selected
+  useEffect(() => {
+    if (selectedProject?.id) {
+      const trackView = async () => {
+        try {
+          await supabase.rpc('increment_project_view', { 
+            project_id: selectedProject.id 
+          });
+          console.log('Project view tracked:', selectedProject.id);
+        } catch (error) {
+          console.error('Error tracking project view:', error);
+        }
+      };
+      
+      trackView();
+    }
+  }, [selectedProject?.id]);
 
   const handleProjectClick = (project: any) => {
     setSelectedProject(project);

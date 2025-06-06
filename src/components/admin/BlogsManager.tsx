@@ -164,6 +164,10 @@ const BlogsManager = () => {
                         <Calendar className="h-3 w-3 mr-1" />
                         {new Date(blog.created_at).toLocaleDateString()}
                       </div>
+                      <div className="flex items-center">
+                        <Eye className="h-3 w-3 mr-1" />
+                        {blog.views || 0} views
+                      </div>
                       <Badge variant={blog.published ? "default" : "secondary"}>
                         {blog.published ? "Published" : "Draft"}
                       </Badge>

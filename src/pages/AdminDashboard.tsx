@@ -4,18 +4,19 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LogOut, Plus, FileText, FolderOpen, User, Layout } from 'lucide-react';
+import { LogOut, Plus, FileText, FolderOpen, User, Layout, BarChart3 } from 'lucide-react';
 import AdminProtectedRoute from '@/components/admin/AdminProtectedRoute';
 import ProjectsManager from '@/components/admin/ProjectsManager';
 import BlogsManager from '@/components/admin/BlogsManager';
 import SiteSectionsManager from '@/components/admin/SiteSectionsManager';
 import CVManager from '@/components/admin/CVManager';
+import AnalyticsOverview from '@/components/admin/AnalyticsOverview';
 import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('sections');
+  const [activeTab, setActiveTab] = useState('analytics');
 
   const handleSignOut = async () => {
     await signOut();
@@ -62,14 +63,18 @@ const AdminDashboard = () => {
               <CardHeader>
                 <CardTitle className="text-2xl">Portfolio Management Dashboard</CardTitle>
                 <p className="text-muted-foreground">
-                  Manage your projects, blog posts, CV, and site sections. All changes will be reflected on your public portfolio immediately.
+                  Manage your projects, blog posts, CV, and site sections. Monitor your content performance with detailed analytics.
                 </p>
               </CardHeader>
             </Card>
 
             {/* Management Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4 max-w-2xl">
+              <TabsList className="grid w-full grid-cols-5 max-w-3xl">
+                <TabsTrigger value="analytics" className="flex items-center space-x-2">
+                  <BarChart3 className="h-4 w-4" />
+                  <span>Analytics</span>
+                </TabsTrigger>
                 <TabsTrigger value="sections" className="flex items-center space-x-2">
                   <Layout className="h-4 w-4" />
                   <span>Site Sections</span>
@@ -87,6 +92,18 @@ const AdminDashboard = () => {
                   <span>Blog Posts</span>
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="analytics" className="space-y-6">
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-2xl font-bold mb-2">Analytics Overview</h2>
+                    <p className="text-muted-foreground">
+                      Track the performance of your projects and blog posts with real-time view statistics.
+                    </p>
+                  </div>
+                  <AnalyticsOverview />
+                </div>
+              </TabsContent>
 
               <TabsContent value="sections" className="space-y-6">
                 <SiteSectionsManager />
