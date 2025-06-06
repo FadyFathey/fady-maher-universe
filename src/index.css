@@ -117,3 +117,56 @@
     background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
   }
 }
+
+/* Custom styles for blog article content */
+@layer components {
+  .article-content {
+    @apply font-inter;
+    line-height: 1.75;
+    font-size: 18px;
+  }
+
+  .article-content h1,
+  .article-content h2,
+  .article-content h3,
+  .article-content h4,
+  .article-content h5,
+  .article-content h6 {
+    @apply font-semibold tracking-tight;
+    scroll-margin-top: 2rem;
+  }
+
+  .article-content p {
+    @apply mb-6 leading-relaxed;
+  }
+
+  .article-content ul,
+  .article-content ol {
+    @apply my-6 pl-6;
+  }
+
+  .article-content li {
+    @apply mb-2;
+  }
+
+  .article-content blockquote {
+    @apply border-l-4 border-primary/30 pl-6 my-6 italic text-muted-foreground;
+  }
+
+  .article-content img {
+    @apply rounded-lg shadow-sm my-8;
+  }
+
+  .article-content a {
+    @apply text-primary underline underline-offset-2 hover:underline-offset-4 transition-all;
+  }
+
+  /* Code block styling */
+  .article-content pre {
+    @apply !bg-muted border border-border rounded-lg overflow-x-auto my-6;
+  }
+
+  .article-content :not(pre) > code {
+    @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono font-medium;
+  }
+}

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft, Calendar, Tag, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import BlogContent from '@/components/BlogContent';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -74,7 +74,7 @@ const BlogPage = () => {
                     {selectedPost.title}
                   </h1>
                   
-                  <p className="text-xl text-muted-foreground leading-relaxed font-light">
+                  <p className="text-xl text-muted-foreground leading-relaxed font-light max-w-2xl">
                     {selectedPost.excerpt}
                   </p>
                 </div>
@@ -130,46 +130,9 @@ const BlogPage = () => {
                 </div>
               )}
 
-              {/* Article Content */}
-              <div className="prose prose-lg prose-gray dark:prose-invert max-w-none">
-                <div className="space-y-6 text-foreground/90 leading-8 text-lg font-light tracking-wide">
-                  {selectedPost.content.split('\n\n').map((paragraph: string, index: number) => {
-                    if (paragraph.trim() === '') return null;
-                    
-                    // Check if it's a heading (starts with #)
-                    if (paragraph.startsWith('#')) {
-                      const headingLevel = paragraph.match(/^#+/)?.[0].length || 1;
-                      const headingText = paragraph.replace(/^#+\s*/, '');
-                      
-                      if (headingLevel === 1) {
-                        return (
-                          <h2 key={index} className="text-3xl font-bold text-foreground mt-12 mb-6 tracking-tight">
-                            {headingText}
-                          </h2>
-                        );
-                      } else if (headingLevel === 2) {
-                        return (
-                          <h3 key={index} className="text-2xl font-semibold text-foreground mt-10 mb-4 tracking-tight">
-                            {headingText}
-                          </h3>
-                        );
-                      } else {
-                        return (
-                          <h4 key={index} className="text-xl font-medium text-foreground mt-8 mb-3 tracking-tight">
-                            {headingText}
-                          </h4>
-                        );
-                      }
-                    }
-                    
-                    // Regular paragraph
-                    return (
-                      <p key={index} className="mb-6 text-foreground/85 leading-8 text-lg">
-                        {paragraph}
-                      </p>
-                    );
-                  })}
-                </div>
+              {/* Article Content with enhanced typography */}
+              <div className="article-content">
+                <BlogContent content={selectedPost.content} />
               </div>
 
               {/* Tags Section */}
