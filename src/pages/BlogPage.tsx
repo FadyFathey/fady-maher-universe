@@ -1,9 +1,11 @@
+
 import React, { useState } from 'react';
 import { ArrowLeft, Calendar, Tag, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { OptimizedImage } from '@/components/ui/optimized-image';
+import { Separator } from '@/components/ui/separator';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -54,64 +56,155 @@ const BlogPage = () => {
       <div className="min-h-screen bg-background">
         <Navigation />
         <main className="pt-20">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <Button 
               variant="ghost" 
               onClick={handleBackClick}
-              className="mb-8 hover:bg-accent"
+              className="mb-8 hover:bg-accent transition-colors"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Blog
             </Button>
 
-            <article className="space-y-8">
+            <article className="max-w-3xl mx-auto">
+              {/* Hero Section */}
+              <header className="mb-12 space-y-8">
+                <div className="space-y-6">
+                  <h1 className="text-4xl sm:text-5xl font-bold leading-tight text-foreground tracking-tight">
+                    {selectedPost.title}
+                  </h1>
+                  
+                  <p className="text-xl text-muted-foreground leading-relaxed font-light">
+                    {selectedPost.excerpt}
+                  </p>
+                </div>
+                
+                <div className="flex items-center justify-between py-6">
+                  <div className="flex items-center space-x-6 text-sm text-muted-foreground">
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="h-4 w-4" />
+                      <time dateTime={selectedPost.created_at}>
+                        {new Date(selectedPost.created_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </time>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Clock className="h-4 w-4" />
+                      <span>{Math.ceil(selectedPost.content?.length / 1000) || 1} min read</span>
+                    </div>
+                  </div>
+
+                  {selectedPost.tags && selectedPost.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {selectedPost.tags.slice(0, 3).map((tag: string, index: number) => (
+                        <Badge key={index} variant="secondary" className="text-xs">
+                          <Tag className="mr-1 h-3 w-3" />
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <Separator />
+              </header>
+
+              {/* Featured Image */}
               {selectedPost.image_url && (
-                <div className="relative aspect-video rounded-lg overflow-hidden">
-                  <OptimizedImage
-                    src={selectedPost.image_url}
-                    alt={selectedPost.title}
-                    className="w-full h-full object-cover"
-                    fallbackContent={<span className="text-muted-foreground">Image unavailable</span>}
-                  />
+                <div className="mb-12">
+                  <div className="relative aspect-[16/9] rounded-xl overflow-hidden shadow-lg">
+                    <OptimizedImage
+                      src={selectedPost.image_url}
+                      alt={selectedPost.title}
+                      className="w-full h-full object-cover"
+                      fallbackContent={
+                        <div className="w-full h-full bg-gradient-to-br from-muted/20 to-muted/5 flex items-center justify-center">
+                          <span className="text-muted-foreground">Image unavailable</span>
+                        </div>
+                      }
+                    />
+                  </div>
                 </div>
               )}
 
-              <header className="space-y-4">
-                <h1 className="text-4xl font-bold text-gradient">
-                  {selectedPost.title}
-                </h1>
-                
-                <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                  <div className="flex items-center">
-                    <Calendar className="mr-1 h-4 w-4" />
-                    {new Date(selectedPost.created_at).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </div>
-                  <div className="flex items-center">
-                    <Clock className="mr-1 h-4 w-4" />
-                    5 min read
+              {/* Article Content */}
+              <div className="prose prose-lg prose-gray dark:prose-invert max-w-none">
+                <div className="space-y-6 text-foreground/90 leading-8 text-lg font-light tracking-wide">
+                  {selectedPost.content.split('\n\n').map((paragraph: string, index: number) => {
+                    if (paragraph.trim() === '') return null;
+                    
+                    // Check if it's a heading (starts with #)
+                    if (paragraph.startsWith('#')) {
+                      const headingLevel = paragraph.match(/^#+/)?.[0].length || 1;
+                      const headingText = paragraph.replace(/^#+\s*/, '');
+                      
+                      if (headingLevel === 1) {
+                        return (
+                          <h2 key={index} className="text-3xl font-bold text-foreground mt-12 mb-6 tracking-tight">
+                            {headingText}
+                          </h2>
+                        );
+                      } else if (headingLevel === 2) {
+                        return (
+                          <h3 key={index} className="text-2xl font-semibold text-foreground mt-10 mb-4 tracking-tight">
+                            {headingText}
+                          </h3>
+                        );
+                      } else {
+                        return (
+                          <h4 key={index} className="text-xl font-medium text-foreground mt-8 mb-3 tracking-tight">
+                            {headingText}
+                          </h4>
+                        );
+                      }
+                    }
+                    
+                    // Regular paragraph
+                    return (
+                      <p key={index} className="mb-6 text-foreground/85 leading-8 text-lg">
+                        {paragraph}
+                      </p>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Tags Section */}
+              {selectedPost.tags && selectedPost.tags.length > 0 && (
+                <div className="mt-16 pt-8 border-t border-border">
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                      Tags
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
+                      {selectedPost.tags.map((tag: string, index: number) => (
+                        <Badge 
+                          key={index} 
+                          variant="outline" 
+                          className="px-3 py-1 text-sm font-normal hover:bg-accent transition-colors"
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
                 </div>
+              )}
 
-                {selectedPost.tags && selectedPost.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {selectedPost.tags.map((tag: string, index: number) => (
-                      <Badge key={index} variant="secondary">
-                        <Tag className="mr-1 h-3 w-3" />
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </header>
-
-              <div className="prose prose-lg max-w-none">
-                <div className="whitespace-pre-wrap leading-relaxed">
-                  {selectedPost.content}
-                </div>
+              {/* Back to Blog CTA */}
+              <div className="mt-16 pt-8 border-t border-border text-center">
+                <Button 
+                  onClick={handleBackClick}
+                  variant="outline"
+                  size="lg"
+                  className="px-8 py-3"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to All Posts
+                </Button>
               </div>
             </article>
           </div>
