@@ -132,17 +132,61 @@ export type Database = {
         }
         Relationships: []
       }
+      website_analytics: {
+        Row: {
+          created_at: string
+          id: string
+          page_path: string
+          referrer: string | null
+          user_agent: string | null
+          visitor_ip: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          page_path: string
+          referrer?: string | null
+          user_agent?: string | null
+          visitor_ip?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          page_path?: string
+          referrer?: string | null
+          user_agent?: string | null
+          visitor_ip?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      get_total_page_views: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      get_total_visitors: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       increment_blog_view: {
         Args: { blog_id: string }
         Returns: undefined
       }
       increment_project_view: {
         Args: { project_id: string }
+        Returns: undefined
+      }
+      record_page_visit: {
+        Args: {
+          page_path: string
+          visitor_ip?: string
+          user_agent?: string
+          referrer?: string
+        }
         Returns: undefined
       }
     }

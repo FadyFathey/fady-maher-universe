@@ -3,7 +3,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, FolderOpen, FileText, TrendingUp } from 'lucide-react';
+import { Eye, FolderOpen, FileText, TrendingUp, Users, Globe } from 'lucide-react';
 
 const AnalyticsOverview = () => {
   // Fetch projects analytics
@@ -32,6 +32,26 @@ const AnalyticsOverview = () => {
     }
   });
 
+  // Fetch total visitors
+  const { data: totalVisitors = 0 } = useQuery({
+    queryKey: ['total-visitors'],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_total_visitors');
+      if (error) throw error;
+      return data || 0;
+    }
+  });
+
+  // Fetch total page views
+  const { data: totalPageViews = 0 } = useQuery({
+    queryKey: ['total-page-views'],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_total_page_views');
+      if (error) throw error;
+      return data || 0;
+    }
+  });
+
   // Calculate metrics
   const totalProjects = projectsData.length;
   const totalProjectViews = projectsData.reduce((sum, project) => sum + (project.views || 0), 0);
@@ -40,16 +60,28 @@ const AnalyticsOverview = () => {
 
   const metrics = [
     {
+      title: "Total Visitors",
+      value: totalVisitors,
+      icon: Users,
+      description: "Unique website visitors"
+    },
+    {
+      title: "Total Page Views",
+      value: totalPageViews,
+      icon: Globe,
+      description: "All page visits"
+    },
+    {
       title: "Total Projects",
       value: totalProjects,
       icon: FolderOpen,
       description: "Published projects"
     },
     {
-      title: "Total Project Views",
+      title: "Project Views",
       value: totalProjectViews,
       icon: Eye,
-      description: "Cumulative project views"
+      description: "Project detail views"
     },
     {
       title: "Total Blog Posts", 
@@ -58,15 +90,15 @@ const AnalyticsOverview = () => {
       description: "Published blog posts"
     },
     {
-      title: "Total Blog Views",
+      title: "Blog Views",
       value: totalBlogViews,
       icon: TrendingUp,
-      description: "Cumulative blog views"
+      description: "Blog post views"
     }
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {metrics.map((metric) => {
         const Icon = metric.icon;
         return (
