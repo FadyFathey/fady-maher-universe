@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Moon, Sun, Menu, X } from 'lucide-react';
 import { Button } from './ui/button';
@@ -48,11 +49,11 @@ const Navigation = () => {
   const navItems = [
     { label: 'About', href: '#about' },
     { label: 'Technologies', href: '#technologies' },
-    { label: 'Projects', href: '/projects', isRoute: true }, // Changed to route
-    { label: 'Blog', href: '/blog', isRoute: true },         // Changed to route
+    { label: 'Projects', href: '/projects', isRoute: true },
+    { label: 'Blog', href: '/blog', isRoute: true },
     { label: 'CV', href: cvUrl, isDownload: true },
     { label: 'Contact', href: '#contact' },
-    { label: 'Admin Access (Only)', href: '/admin-login', isRoute: true }
+    { label: 'Admin Access (Only)', href: '/admin/login', isRoute: true }
   ];
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string, isRoute?: boolean, isDownload?: boolean) => {
@@ -88,18 +89,16 @@ const Navigation = () => {
   };
   
   const renderNavItem = (item: any, isMobile: boolean) => {
-    const commonProps = {
-      key: item.label,
-      className: isMobile 
-        ? "text-muted-foreground hover:text-foreground block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
-        : "text-muted-foreground hover:text-foreground transition-colors duration-200 font-medium"
-    };
+    const baseClassName = isMobile 
+      ? "text-muted-foreground hover:text-foreground block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+      : "text-muted-foreground hover:text-foreground transition-colors duration-200 font-medium";
 
     if (item.isRoute) {
       return (
         <Link
+          key={item.label}
           to={item.href || '#'}
-          {...commonProps}
+          className={baseClassName}
           onClick={(e) => handleLinkClick(e as any, item.href, item.isRoute)}
         >
           {item.label}
@@ -109,8 +108,9 @@ const Navigation = () => {
 
     return (
       <a
+        key={item.label}
         href={item.href || '#'}
-        {...commonProps}
+        className={baseClassName}
         onClick={(e) => handleLinkClick(e, item.href || '', item.isRoute, item.isDownload)}
       >
         {item.label}
