@@ -1,65 +1,95 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { ArrowRight, Calendar, ExternalLink, Github } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { OptimizedImage } from '@/components/ui/optimized-image';
-import ProjectModal from '@/components/ProjectModal';
-
-type Project = {
-  id: string;
-  title: string;
-  description: string;
-  image_url?: string | null;
-  tech_stack: string[];
-  github_link?: string | null;
-  live_demo_link?: string | null;
-  featured: boolean;
-  visible?: boolean | null;
-  created_at: string;
-};
+import React from "react";
+import { ArrowRight, Calendar, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { OptimizedImage } from "@/components/ui/optimized-image";
+import { useTranslation } from "react-i18next";
+import { projectPath } from "@/lib/slugify";
+import { useProjects } from "@/hooks/useProjects";
+import { getVisibleProjects, type ProjectRecord } from "@/lib/projects";
 
 const Projects = () => {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const { t, i18n } = useTranslation();
+  const { data: projects = [], isLoading } = useProjects();
 
-  const { data: projects = [], isLoading } = useQuery({
-    queryKey: ['projects'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return (data ?? []).map((project: any) => ({
-        ...project,
-        tech_stack: project.tech_stack ?? [],
-        featured: Boolean(project.featured),
-      })) as Project[];
-    },
-  });
-
-  const visibleProjects = projects.filter((p) => p.visible !== false);
+  const visibleProjects = getVisibleProjects(projects);
   const featuredProjects = visibleProjects.filter((p) => p.featured);
   const homeProjects =
-    featuredProjects.length > 0
-      ? featuredProjects
-      : visibleProjects.sort((a, b) => {
-          const aDate = new Date(a.created_at).getTime();
-          const bDate = new Date(b.created_at).getTime();
-          return bDate - aDate;
-        });
+    featuredProjects.length > 0 ? featuredProjects : visibleProjects;
+
+  const renderProjectCard = (project: ProjectRecord) => {
+    const path = projectPath(project.slug, project.id);
+
+    return (
+      <Link
+        key={project.id}
+        to={path}
+        state={{ project }}
+        className="block"
+      >
+        <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 h-full">
+          <CardHeader className="p-0">
+            {project.image_url ? (
+              <div className="overflow-hidden rounded-t-lg">
+                <OptimizedImage
+                  src={project.image_url}
+                  alt={project.title}
+                  className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                  fallbackContent={
+                    <span className="text-muted-foreground">
+                      {t("projects.image_unavailable")}
+                    </span>
+                  }
+                />
+              </div>
+            ) : (
+              <div className="h-48 bg-gradient-to-br from-primary/20 to-primary/5 rounded-t-lg" />
+            )}
+          </CardHeader>
+          <CardContent className="p-6 space-y-4">
+            <div className="space-y-2">
+              <h3 className="text-xl font-semibold line-clamp-2">{project.title}</h3>
+              <p className="text-sm text-muted-foreground line-clamp-3">
+                {project.description}
+              </p>
+            </div>
+
+            {project.results ? (
+              <p className="text-sm font-medium text-primary line-clamp-2">
+                {project.results}
+              </p>
+            ) : null}
+
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <div className="flex items-center space-x-1">
+                <Calendar className="h-3 w-3" />
+                <span>
+                  {project.created_at
+                    ? new Date(project.created_at).toLocaleDateString(
+                        i18n.language === "ar" ? "ar-EG" : "en-US",
+                        { month: "short", year: "numeric" }
+                      )
+                    : ""}
+                </span>
+              </div>
+              {project.live_demo_link && <ExternalLink className="h-3 w-3" />}
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+    );
+  };
 
   return (
     <section id="projects" className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center space-y-4 mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gradient">Projects</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold text-gradient">
+            {t("projects.case_studies_title")}
+          </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Featured work from my recent frontend and full-stack builds.
+            {t("projects.case_studies_subtitle")}
           </p>
         </div>
 
@@ -79,82 +109,23 @@ const Projects = () => {
           </div>
         ) : homeProjects.length === 0 ? (
           <div className="text-center py-10">
-            <p className="text-muted-foreground">No projects available yet.</p>
+            <p className="text-muted-foreground">{t("projects.no_projects")}</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {homeProjects.slice(0, 6).map((project) => (
-              <Card
-                key={project.id}
-                className="group cursor-pointer hover:shadow-lg transition-all duration-300"
-                onClick={() => setSelectedProject(project)}
-              >
-                <CardHeader className="p-0">
-                  {project.image_url ? (
-                    <div className="overflow-hidden rounded-t-lg">
-                      <OptimizedImage
-                        src={project.image_url}
-                        alt={project.title}
-                        className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-                        fallbackContent={<span className="text-muted-foreground">Image unavailable</span>}
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-48 bg-gradient-to-br from-primary/20 to-primary/5 rounded-t-lg" />
-                  )}
-                </CardHeader>
-                <CardContent className="p-6 space-y-4">
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-semibold line-clamp-2">{project.title}</h3>
-                    <p className="text-sm text-muted-foreground line-clamp-3">{project.description}</p>
-                  </div>
-
-                  {!!project.tech_stack?.length && (
-                    <div className="flex flex-wrap gap-1">
-                      {project.tech_stack.slice(0, 3).map((tech, i) => (
-                        <Badge key={`${project.id}-${tech}-${i}`} variant="outline" className="text-xs">
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <div className="flex items-center space-x-1">
-                      <Calendar className="h-3 w-3" />
-                      <span>
-                        {new Date(project.created_at).toLocaleDateString('en-US', {
-                          month: 'short',
-                          year: 'numeric',
-                        })}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {project.github_link && <Github className="h-3 w-3" />}
-                      {project.live_demo_link && <ExternalLink className="h-3 w-3" />}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {homeProjects.slice(0, 6).map(renderProjectCard)}
           </div>
         )}
 
         <div className="text-center mt-10">
           <Button asChild variant="outline">
             <Link to="/projects">
-              View All Projects
+              {t("projects.view_all")}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
         </div>
       </div>
-
-      <ProjectModal
-        project={selectedProject}
-        isOpen={!!selectedProject}
-        onClose={() => setSelectedProject(null)}
-      />
     </section>
   );
 };

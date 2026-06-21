@@ -1,47 +1,48 @@
-
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useAuth } from '@/hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
-import { Shield, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { Shield, AlertCircle, Eye, EyeOff } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { signIn, user, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (user && isAdmin) {
-      navigate('/admin/dashboard');
+      navigate("/admin/dashboard");
     } else if (user && !isAdmin) {
-      setError('Access denied. Admin privileges required.');
+      setError(t("admin.access_denied"));
     }
-  }, [user, isAdmin, navigate]);
+  }, [user, isAdmin, navigate, t]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
-    if (email !== 'fadyfathymaher3@gmail.com') {
-      setError('Access denied. Only authorized admin can login.');
+    if (email !== "fadyfathymaher3@gmail.com") {
+      setError(t("admin.only_admin"));
       setLoading(false);
       return;
     }
 
     const { error } = await signIn(email, password);
-    
+
     if (error) {
       setError(error.message);
     }
-    
+
     setLoading(false);
   };
 
@@ -52,12 +53,14 @@ const AdminLogin = () => {
           <div className="flex justify-center mb-4">
             <Shield className="h-12 w-12 text-primary" />
           </div>
-          <CardTitle className="text-2xl font-bold">Admin Login</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            {t("admin.login_title")}
+          </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Authorized access only for portfolio management
+            {t("admin.login_subtitle")}
           </p>
         </CardHeader>
-        
+
         <CardContent className="space-y-4">
           {error && (
             <Alert variant="destructive">
@@ -65,11 +68,11 @@ const AdminLogin = () => {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
-                Email
+                {t("admin.email")}
               </label>
               <Input
                 id="email"
@@ -81,18 +84,18 @@ const AdminLogin = () => {
                 className="w-full"
               />
             </div>
-            
+
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">
-                Password
+                {t("admin.password")}
               </label>
               <div className="relative">
                 <Input
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  placeholder={t("admin.password_placeholder")}
                   required
                   className="w-full pr-10"
                 />
@@ -111,19 +114,15 @@ const AdminLogin = () => {
                 </Button>
               </div>
             </div>
-            
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={loading}
-            >
-              {loading ? 'Signing in...' : 'Sign In'}
+
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? t("admin.signing_in") : t("admin.sign_in")}
             </Button>
           </form>
-          
+
           <div className="text-center pt-4">
-            <Button variant="ghost" onClick={() => navigate('/')}>
-              Back to Portfolio
+            <Button variant="ghost" onClick={() => navigate("/")}>
+              {t("projects.back_to_portfolio")}
             </Button>
           </div>
         </CardContent>

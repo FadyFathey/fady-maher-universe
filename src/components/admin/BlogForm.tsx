@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { slugify } from '@/lib/slugify';
 
 interface BlogFormProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ interface BlogFormProps {
 const BlogForm: React.FC<BlogFormProps> = ({ isOpen, onClose, blog }) => {
   const [formData, setFormData] = useState({
     title: '',
+    slug: '',
     excerpt: '',
     content: '',
     tags: '',
@@ -36,6 +38,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ isOpen, onClose, blog }) => {
     if (blog) {
       setFormData({
         title: blog.title || '',
+        slug: blog.slug || '',
         excerpt: blog.excerpt || '',
         content: blog.content || '',
         tags: blog.tags ? blog.tags.join(', ') : '',
@@ -46,6 +49,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ isOpen, onClose, blog }) => {
     } else {
       setFormData({
         title: '',
+        slug: '',
         excerpt: '',
         content: '',
         tags: '',
@@ -86,6 +90,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ isOpen, onClose, blog }) => {
 
       const blogData = {
         ...data,
+        slug: data.slug || slugify(data.title),
         tags: data.tags.split(',').map((tag: string) => tag.trim()).filter(Boolean),
         image_url: imageUrl,
         display_order: data.display_order ? parseInt(data.display_order) : null,
@@ -158,9 +163,25 @@ const BlogForm: React.FC<BlogFormProps> = ({ isOpen, onClose, blog }) => {
             <Input
               id="title"
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  title: e.target.value,
+                  slug: formData.slug || slugify(e.target.value),
+                })
+              }
               placeholder="Blog post title"
               required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="slug">URL Slug</Label>
+            <Input
+              id="slug"
+              value={formData.slug}
+              onChange={(e) => setFormData({ ...formData, slug: slugify(e.target.value) })}
+              placeholder="blog-post-slug"
             />
           </div>
 

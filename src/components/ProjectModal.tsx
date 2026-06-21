@@ -1,10 +1,11 @@
-
-import React from 'react';
-import { Github, ExternalLink, Calendar } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { OptimizedImage } from './ui/optimized-image';
+import React from "react";
+import { Github, ExternalLink, Calendar, ArrowRight } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import { OptimizedImage } from "./ui/optimized-image";
+import { useTranslation } from "react-i18next";
+import CaseStudySections, { ProjectMetric } from "./CaseStudySections";
 
 interface Project {
   id: string;
@@ -16,6 +17,10 @@ interface Project {
   live_demo_link?: string;
   featured: boolean;
   created_at: string;
+  challenge?: string | null;
+  solution?: string | null;
+  results?: string | null;
+  metrics?: ProjectMetric[] | null;
 }
 
 interface ProjectModalProps {
@@ -25,7 +30,15 @@ interface ProjectModalProps {
 }
 
 const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) => {
+  const { t, i18n } = useTranslation();
+
   if (!project) return null;
+
+  const scrollToContact = () => {
+    onClose();
+    const element = document.querySelector("#contact");
+    if (element) element.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -33,7 +46,7 @@ const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) => {
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">{project.title}</DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-6">
           {project.image_url && (
             <div className="relative overflow-hidden rounded-lg">
@@ -41,7 +54,11 @@ const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) => {
                 src={project.image_url}
                 alt={project.title}
                 className="w-full h-64 object-cover"
-                fallbackContent={<span className="text-muted-foreground">Image unavailable</span>}
+                fallbackContent={
+                  <span className="text-muted-foreground">
+                    {t("projects.image_unavailable")}
+                  </span>
+                }
               />
             </div>
           )}
@@ -49,10 +66,10 @@ const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) => {
           <div className="flex items-center text-sm text-muted-foreground border-b pb-4">
             <div className="flex items-center">
               <Calendar className="mr-1 h-4 w-4" />
-              {new Date(project.created_at).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long'
-              })}
+              {new Date(project.created_at).toLocaleDateString(
+                i18n.language === "ar" ? "ar-EG" : "en-US",
+                { year: "numeric", month: "long" }
+              )}
             </div>
           </div>
 
@@ -64,19 +81,19 @@ const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) => {
             ))}
           </div>
 
+          <CaseStudySections project={project} />
+
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Project Overview</h3>
-            <p className="text-muted-foreground leading-relaxed">
-              {project.description}
-            </p>
+            <h3 className="text-lg font-semibold">{t("projects.project_overview")}</h3>
+            <p className="text-muted-foreground leading-relaxed">{project.description}</p>
           </div>
 
-          <div className="flex items-center space-x-4 pt-4 border-t">
+          <div className="flex flex-wrap items-center gap-4 pt-4 border-t">
             {project.github_link && (
               <Button variant="outline" asChild>
                 <a href={project.github_link} target="_blank" rel="noopener noreferrer">
                   <Github className="h-4 w-4 mr-2" />
-                  View Code
+                  {t("projects.view_code")}
                 </a>
               </Button>
             )}
@@ -84,10 +101,14 @@ const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) => {
               <Button asChild>
                 <a href={project.live_demo_link} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-4 w-4 mr-2" />
-                  Live Demo
+                  {t("projects.live_demo")}
                 </a>
               </Button>
             )}
+            <Button variant="secondary" onClick={scrollToContact}>
+              {t("projects.similar_cta")}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
           </div>
         </div>
       </DialogContent>

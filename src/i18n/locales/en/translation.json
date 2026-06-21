@@ -1,0 +1,196 @@
+{
+  "nav": {
+    "home": "Home",
+    "projects": "Projects",
+    "blog": "Blog",
+    "contact": "Contact",
+    "about": "About",
+    "technologies": "Tools I Use",
+    "services": "Services",
+    "cv": "CV",
+    "hire_me": "Get a Free Quote"
+  },
+  "hero": {
+    "title": "Fady Fathey Maher",
+    "subtitle": "Web Developer for Growing Businesses",
+    "heading": "Focus on running your business while I focus on growing it",
+    "subheading": "I help business owners get more leads, bookings, and sales through fast, professional websites. You focus on running your business — I'll handle the online part.",
+    "cta_primary": "Book a Free Call",
+    "cta_secondary": "See My Work",
+    "cta_book_call": "Book a Free 15-Min Call",
+    "replies": "I reply within 24 hours",
+    "projects_shipped": "20+ Businesses Helped",
+    "specialist": "Websites That Convert",
+    "turnaround": "Most projects delivered in 2–4 weeks"
+  },
+  "services": {
+    "title": "How I Help Your Business Grow Online",
+    "subtitle": "Whether you need a new website, a redesign, or more customers from your existing site — I handle everything so you don't have to.",
+    "icp": "Perfect for local businesses, service providers, and small companies ready to grow online.",
+    "mvp_title": "New Business Websites",
+    "mvp_desc": "Get a professional website that works on every phone and shows up on Google — built and launched in weeks, not months.",
+    "landing_title": "Website Redesigns",
+    "landing_desc": "Turn an outdated site into one that actually brings in calls, bookings, and inquiries. Faster loading, clearer messaging, more conversions.",
+    "audit_title": "Website Health Check",
+    "audit_desc": "Already have a site but it's not bringing results? I'll find what's holding it back and give you a clear plan to fix it.",
+    "cta": "Get a Free Quote"
+  },
+  "partners": {
+    "eyebrow": "Trusted By",
+    "title": "Businesses That Trust My Work",
+    "subtitle": "From local shops to growing brands — I've helped businesses like these get more customers online.",
+    "error": "Unable to load partners right now."
+  },
+  "testimonials": {
+    "title": "What Business Owners Say",
+    "subtitle": "Real feedback from clients who trusted me with their online presence.",
+    "items": [
+      {
+        "quote": "Our old website wasn't bringing any customers. Fady rebuilt it and within weeks we started getting calls and messages we never had before.",
+        "name": "Ahmed Hassan",
+        "role": "Business Owner",
+        "company": "Local Services Company"
+      },
+      {
+        "quote": "I didn't know anything about websites — Fady explained everything simply, kept me updated, and delivered exactly what my business needed.",
+        "name": "Mohamed Adel",
+        "role": "Shop Owner",
+        "company": "Retail Business"
+      },
+      {
+        "quote": "Professional, fast, and easy to work with. Our new site looks great on phones and customers tell us they found us through Google now.",
+        "name": "Sara Khaled",
+        "role": "Founder",
+        "company": "Startup"
+      }
+    ]
+  },
+  "about": {
+    "title": "Why Work With Me?",
+    "description_1": "I'm a web developer based in Cairo who works with business owners who want a website that actually works for them — not just looks pretty. I handle the technical side so you can focus on your customers.",
+    "description_2": "Every project I take on starts with your business goal: more calls, more bookings, more sales. Then I build the site to match.",
+    "experience": "Experience",
+    "education": "Education",
+    "tech_tools": "Tools I Use Behind the Scenes",
+    "exp_title": "Frontend Developer",
+    "exp_company": "Digitalize for Business Services",
+    "exp_period": "Jan 2024 - Present",
+    "exp_location": "Cairo, Egypt",
+    "edu_degree": "Bachelor's in Commerce, Ain Shams University",
+    "edu_cert": "Web Development Certification (EFE)"
+  },
+  "technologies": {
+    "title": "Tools I Use",
+    "description": "Modern, reliable tools that keep your website fast, secure, and easy to update — you don't need to know what they are, I handle it all.",
+    "frontend": "Frontend Frameworks",
+    "styling": "Styling & Design",
+    "state": "State Management",
+    "backend": "Backend & APIs",
+    "tools": "Development Tools",
+    "skills": "Skills & Practices",
+    "projects_stat": "Websites Delivered",
+    "experience_stat": "Years Experience",
+    "responsive_stat": "Mobile-Friendly",
+    "tech_count": "Proven Tools"
+  },
+  "projects": {
+    "title": "Case Studies",
+    "subtitle": "Real websites I've built for real businesses — with the results to prove it.",
+    "case_studies_title": "My Work",
+    "case_studies_subtitle": "See how I helped each client solve a business problem and get measurable results.",
+    "view_all": "View All Projects",
+    "no_projects": "No projects available yet.",
+    "no_projects_desc": "Check back soon for new case studies!",
+    "not_found": "Project not found",
+    "load_error": "We couldn't load this project. Please try again.",
+    "image_unavailable": "Image unavailable",
+    "project_overview": "Project Overview",
+    "challenge": "The Challenge",
+    "solution": "The Solution",
+    "results": "The Results",
+    "similar_cta": "Start a Similar Project",
+    "back_to_projects": "Back to Projects",
+    "view_code": "View Code",
+    "live_demo": "Visit Live Site",
+    "about_project": "About This Project",
+    "tech_used": "Tools Used (Behind the Scenes)",
+    "back_to_portfolio": "Back to Home",
+    "featured_title": "My Work",
+    "featured_subtitle": "Real websites I've built for real businesses — with the results to prove it."
+  },
+  "blog": {
+    "title": "Tips for Business Owners",
+    "subtitle": "Practical advice on getting more from your website — no technical jargon.",
+    "no_posts": "Blog posts will appear here once they are published through the admin dashboard.",
+    "view_all": "View All Posts",
+    "min_read": "{{count}} min read",
+    "image_unavailable": "No image available",
+    "back_to_blog": "Back to Blog",
+    "back_to_all": "Back to All Posts",
+    "tags": "Tags",
+    "blog_title": "Business & Web Tips",
+    "blog_subtitle": "Simple, practical advice to help your business grow online.",
+    "no_posts_title": "No blog posts yet",
+    "no_posts_desc": "Check back soon for new content!",
+    "post_cta": "Want a website that brings you more customers?",
+    "post_cta_btn": "Get a Free Quote"
+  },
+  "not_found": {
+    "title": "404",
+    "message": "Oops! Page not found",
+    "back_home": "Return to Home"
+  },
+  "admin": {
+    "login_title": "Admin Login",
+    "login_subtitle": "Authorized access only for portfolio management",
+    "email": "Email",
+    "password": "Password",
+    "password_placeholder": "Enter your password",
+    "sign_in": "Sign In",
+    "signing_in": "Signing in...",
+    "access_denied": "Access denied. Admin privileges required.",
+    "only_admin": "Access denied. Only authorized admin can login."
+  },
+  "contact": {
+    "title": "Ready to Grow Your Business Online?",
+    "subtitle": "Tell me about your business and what you need — I'll reply within 24 hours with a clear plan and quote. No pressure, no jargon.",
+    "send_message": "Send a Message",
+    "name": "Name",
+    "name_placeholder": "Your full name",
+    "email": "Email",
+    "email_placeholder": "your.email@example.com",
+    "message": "Message",
+    "message_placeholder": "Tell me about your business and what you'd like your website to do (e.g. get more calls, sell products, take bookings)...",
+    "phone": "Phone",
+    "sending": "Sending...",
+    "send_btn": "Get My Free Quote",
+    "download_cv": "Download My CV",
+    "cv_desc": "Get a detailed overview of my experience, skills, and projects.",
+    "contact_info": "Contact Information",
+    "location": "Location",
+    "location_val": "Cairo, Egypt",
+    "connect": "Connect with Me",
+    "available_title": "Taking New Clients",
+    "available_desc": "Open to new projects — let's talk about yours",
+    "success_title": "Message sent!",
+    "success_desc": "Thank you for your message. I'll get back to you within 24 hours.",
+    "error_title": "Something went wrong",
+    "error_desc": "Your message could not be sent. Please email me directly at fadyfathymaher3@gmail.com"
+  },
+  "footer": {
+    "description": "I help business owners get more customers through professional, fast websites.",
+    "quick_links": "Quick Links",
+    "connect": "Connect",
+    "get_quote": "Get a Free Quote",
+    "made_with": "Made with",
+    "by": "by Fady Fathey Maher"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Try Again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  }
+}

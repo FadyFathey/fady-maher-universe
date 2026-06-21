@@ -1,18 +1,34 @@
-
-import React, { useState } from 'react';
-import { Send, Download, MapPin, Mail, Phone, Github, Linkedin } from 'lucide-react';
-import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
-import { useToast } from '@/hooks/use-toast';
+import React, { useState } from "react";
+import {
+  Send,
+  Download,
+  MapPin,
+  Mail,
+  Phone,
+  Github,
+  Linkedin,
+} from "lucide-react";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
+import { supabase } from "@/integrations/supabase/client";
+import { useSiteSections } from "@/hooks/useSiteSections";
+import { SOCIAL } from "@/config/site";
 
 const Contact = () => {
   const { toast } = useToast();
+  const { t } = useTranslation();
+  const { data: sections } = useSiteSections();
+  const cvSection = sections?.find((section) => section.section_key === "cv");
+  const cvUrl = cvSection?.content ? (cvSection.content as { cv_url?: string }).cv_url : null;
+
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
+    name: "",
+    email: "",
+    message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -20,85 +36,100 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    setTimeout(() => {
+    try {
+      const { error } = await supabase.from("contact_messages").insert([
+        {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          message: formData.message.trim(),
+        },
+      ]);
+
+      if (error) throw error;
+
       toast({
-        title: "Message sent!",
-        description: "Thank you for your message. I'll get back to you soon.",
+        title: t("contact.success_title"),
+        description: t("contact.success_desc"),
       });
-      setFormData({ name: '', email: '', message: '' });
+      setFormData({ name: "", email: "", message: "" });
+    } catch {
+      toast({
+        title: t("contact.error_title"),
+        description: t("contact.error_desc"),
+        variant: "destructive",
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
+  };
+
+  const handleCvDownload = () => {
+    if (!cvUrl) return;
+    const link = document.createElement("a");
+    link.href = cvUrl;
+    link.download = "Fady_Fathey_Maher_CV.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const contactInfo = [
     {
       icon: MapPin,
-      label: 'Location',
-      value: 'Cairo, Egypt'
+      label: t("contact.location"),
+      value: t("contact.location_val"),
     },
     {
       icon: Mail,
-      label: 'Email',
-      value: 'fadyfathymaher3@gmail.com',
-      href: 'mailto:fadyfathymaher3@gmail.com'
+      label: t("contact.email"),
+      value: SOCIAL.email,
+      href: `mailto:${SOCIAL.email}`,
     },
     {
       icon: Phone,
-      label: 'Phone',
-      value: '+201270644733',
-      href: 'tel:+201270644733'
-    }
+      label: t("contact.phone", "Phone"),
+      value: SOCIAL.phone,
+      href: `tel:${SOCIAL.phone}`,
+    },
   ];
 
   const socialLinks = [
-    {
-      icon: Github,
-      label: 'GitHub',
-      href: 'https://github.com/FadyFathey'
-    },
-    {
-      icon: Linkedin,
-      label: 'LinkedIn',
-      href: 'https://www.linkedin.com/in/fady-fathey-maher-72918916b/'
-    }
+    { icon: Github, label: "GitHub", href: SOCIAL.github },
+    { icon: Linkedin, label: "LinkedIn", href: SOCIAL.linkedin },
   ];
 
   return (
     <section id="contact" className="py-20 lg:py-32 bg-muted/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Header */}
         <div className="text-center space-y-4 mb-16 animate-fade-in">
           <h2 className="text-3xl sm:text-4xl font-bold text-gradient">
-            Let's Work Together
+            {t("contact.title")}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Have a project in mind or want to discuss opportunities? 
-            I'd love to hear from you and explore how we can create something amazing together.
+            {t("contact.subtitle")}
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12">
-          
-          {/* Contact Form */}
           <Card className="animate-slide-up">
             <CardHeader>
-              <CardTitle className="text-2xl">Send a Message</CardTitle>
+              <CardTitle className="text-2xl">{t("contact.send_message")}</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label htmlFor="name" className="text-sm font-medium">
-                      Name *
+                      {t("contact.name")} *
                     </label>
                     <Input
                       id="name"
@@ -107,12 +138,12 @@ const Contact = () => {
                       required
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="Your full name"
+                      placeholder={t("contact.name_placeholder")}
                     />
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-medium">
-                      Email *
+                      {t("contact.email")} *
                     </label>
                     <Input
                       id="email"
@@ -121,14 +152,14 @@ const Contact = () => {
                       required
                       value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="your.email@example.com"
+                      placeholder={t("contact.email_placeholder")}
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <label htmlFor="message" className="text-sm font-medium">
-                    Message *
+                    {t("contact.message")} *
                   </label>
                   <Textarea
                     id="message"
@@ -136,21 +167,17 @@ const Contact = () => {
                     required
                     value={formData.message}
                     onChange={handleInputChange}
-                    placeholder="Tell me about your project or say hello..."
+                    placeholder={t("contact.message_placeholder")}
                     rows={6}
                   />
                 </div>
 
-                <Button 
-                  type="submit" 
-                  className="w-full"
-                  disabled={isSubmitting}
-                >
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
                   {isSubmitting ? (
-                    "Sending..."
+                    t("contact.sending")
                   ) : (
                     <>
-                      Send Message
+                      {t("contact.send_btn")}
                       <Send className="ml-2 h-4 w-4" />
                     </>
                   )}
@@ -159,30 +186,24 @@ const Contact = () => {
             </CardContent>
           </Card>
 
-          {/* Contact Info */}
           <div className="space-y-8 animate-fade-in">
-            
-            {/* Download CV */}
-            <Card>
-              <CardContent className="p-6">
-                <div className="text-center space-y-4">
-                  <h3 className="text-xl font-semibold">Download My CV</h3>
-                  <p className="text-muted-foreground">
-                    Get a detailed overview of my experience, skills, and projects.
-                  </p>
-                  <Button className="w-full" asChild>
-                    <a href="#" download>
+            {cvUrl && (
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-center space-y-4">
+                    <h3 className="text-xl font-semibold">{t("contact.download_cv")}</h3>
+                    <p className="text-muted-foreground">{t("contact.cv_desc")}</p>
+                    <Button className="w-full" onClick={handleCvDownload}>
                       <Download className="mr-2 h-4 w-4" />
-                      Download CV
-                    </a>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                      {t("contact.download_cv")}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-            {/* Contact Information */}
             <div className="space-y-4">
-              <h3 className="text-xl font-semibold">Contact Information</h3>
+              <h3 className="text-xl font-semibold">{t("contact.contact_info")}</h3>
               <div className="space-y-3">
                 {contactInfo.map((info) => (
                   <div key={info.label} className="flex items-center space-x-3">
@@ -192,7 +213,7 @@ const Contact = () => {
                     <div>
                       <p className="text-sm text-muted-foreground">{info.label}</p>
                       {info.href ? (
-                        <a 
+                        <a
                           href={info.href}
                           className="font-medium hover:text-primary transition-colors duration-200"
                         >
@@ -207,9 +228,8 @@ const Contact = () => {
               </div>
             </div>
 
-            {/* Social Links */}
             <div className="space-y-4">
-              <h3 className="text-xl font-semibold">Connect with Me</h3>
+              <h3 className="text-xl font-semibold">{t("contact.connect")}</h3>
               <div className="flex space-x-4">
                 {socialLinks.map((social) => (
                   <a
@@ -225,17 +245,16 @@ const Contact = () => {
               </div>
             </div>
 
-            {/* Availability Status */}
             <Card className="border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20">
               <CardContent className="p-6">
                 <div className="flex items-center space-x-3">
                   <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                   <div>
                     <p className="font-medium text-green-700 dark:text-green-300">
-                      Available for Work
+                      {t("contact.available_title")}
                     </p>
                     <p className="text-sm text-green-600 dark:text-green-400">
-                      Open to new opportunities and exciting projects
+                      {t("contact.available_desc")}
                     </p>
                   </div>
                 </div>
