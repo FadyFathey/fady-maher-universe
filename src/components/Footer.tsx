@@ -1,80 +1,64 @@
-
-import React from 'react';
-import { Github, Linkedin, Mail, Heart, Shield } from 'lucide-react';
-import { Button } from './ui/button';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Github, Linkedin, Mail, Heart } from "lucide-react";
+import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { SOCIAL } from "@/config/site";
 
 const Footer = () => {
+  const { t } = useTranslation();
+
   return (
-    <footer className="bg-background border-t border-border mt-20">
+    <footer className="bg-background border-t border-border mt-20 pb-20 md:pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gradient">Fady Fathey</h3>
-            <p className="text-sm text-muted-foreground">
-              Frontend Developer passionate about creating exceptional user experiences with modern web technologies.
-            </p>
+            <h3 className="text-lg font-semibold text-gradient">Fady Fathey Maher</h3>
+            <p className="text-sm text-muted-foreground">{t("footer.description")}</p>
           </div>
 
-          {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold uppercase tracking-wider">Quick Links</h4>
+            <h4 className="text-sm font-semibold uppercase tracking-wider">
+              {t("footer.quick_links")}
+            </h4>
             <div className="space-y-2">
-              <a href="#about" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
-                About
+              <a href="/#services" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
+                {t("nav.services", "Services")}
               </a>
-              <a href="#projects" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Projects
+              <Link to="/projects" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
+                {t("nav.projects")}
+              </Link>
+              <a href="/#about" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
+                {t("nav.about")}
               </a>
-              <a href="#blog" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Blog
+              <a href="/#contact" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
+                {t("nav.contact")}
               </a>
-              <a href="#contact" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Contact
+              <a href="/#contact" className="block text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                {t("footer.get_quote")}
               </a>
             </div>
           </div>
 
-          {/* Technologies */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold uppercase tracking-wider">Technologies</h4>
-            <div className="space-y-2">
-              <span className="block text-sm text-muted-foreground">React.js</span>
-              <span className="block text-sm text-muted-foreground">TypeScript</span>
-              <span className="block text-sm text-muted-foreground">Next.js</span>
-              <span className="block text-sm text-muted-foreground">Tailwind CSS</span>
-            </div>
-          </div>
-
-          {/* Social & Admin */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-semibold uppercase tracking-wider">Connect</h4>
-            <div className="flex flex-col space-y-3">
-              <div className="flex space-x-3">
-                <Button variant="ghost" size="sm" asChild>
-                  <a href="https://github.com/fadyfathey" target="_blank" rel="noopener noreferrer">
-                    <Github className="h-4 w-4" />
-                  </a>
-                </Button>
-                <Button variant="ghost" size="sm" asChild>
-                  <a href="https://linkedin.com/in/fady-fathey" target="_blank" rel="noopener noreferrer">
-                    <Linkedin className="h-4 w-4" />
-                  </a>
-                </Button>
-                <Button variant="ghost" size="sm" asChild>
-                  <a href="mailto:fadyfathymaher3@gmail.com">
-                    <Mail className="h-4 w-4" />
-                  </a>
-                </Button>
-              </div>
-              
-              {/* Admin Access Button */}
-              <Button variant="outline" size="sm" asChild className="w-fit">
-                <Link to="/admin-login">
-                  <Shield className="h-4 w-4 mr-2" />
-                  Admin Access (Only)
-                </Link>
+            <h4 className="text-sm font-semibold uppercase tracking-wider">
+              {t("footer.connect")}
+            </h4>
+            <div className="flex space-x-3">
+              <Button variant="ghost" size="sm" asChild>
+                <a href={SOCIAL.github} target="_blank" rel="noopener noreferrer">
+                  <Github className="h-4 w-4" />
+                </a>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <a href={SOCIAL.linkedin} target="_blank" rel="noopener noreferrer">
+                  <Linkedin className="h-4 w-4" />
+                </a>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <a href={`mailto:${SOCIAL.email}`}>
+                  <Mail className="h-4 w-4" />
+                </a>
               </Button>
             </div>
           </div>
@@ -82,7 +66,9 @@ const Footer = () => {
 
         <div className="border-t border-border mt-8 pt-8 text-center">
           <p className="text-sm text-muted-foreground flex items-center justify-center">
-            Made with <Heart className="h-4 w-4 mx-1 text-red-500" fill="currentColor" /> by Fady Fathey Maher
+            {t("footer.made_with")}{" "}
+            <Heart className="h-4 w-4 mx-1 text-red-500" fill="currentColor" />{" "}
+            {t("footer.by")}
           </p>
         </div>
       </div>

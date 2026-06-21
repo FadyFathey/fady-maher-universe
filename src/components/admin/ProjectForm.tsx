@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { slugify } from '@/lib/slugify';
 
 interface ProjectFormProps {
   isOpen: boolean;
@@ -19,7 +20,12 @@ interface ProjectFormProps {
 const ProjectForm: React.FC<ProjectFormProps> = ({ isOpen, onClose, project }) => {
   const [formData, setFormData] = useState({
     title: '',
+    slug: '',
     description: '',
+    challenge: '',
+    solution: '',
+    results: '',
+    metrics: '',
     tech_stack: '',
     github_link: '',
     live_demo_link: '',
@@ -36,9 +42,17 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ isOpen, onClose, project }) =
 
   useEffect(() => {
     if (project) {
+      const metrics = Array.isArray(project.metrics)
+        ? project.metrics.map((m: { label: string; value: string }) => `${m.label}|${m.value}`).join('\n')
+        : '';
       setFormData({
         title: project.title || '',
+        slug: project.slug || '',
         description: project.description || '',
+        challenge: project.challenge || '',
+        solution: project.solution || '',
+        results: project.results || '',
+        metrics,
         tech_stack: Array.isArray(project.tech_stack) ? project.tech_stack.join(', ') : '',
         github_link: project.github_link || '',
         live_demo_link: project.live_demo_link || '',
@@ -51,7 +65,12 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ isOpen, onClose, project }) =
     } else {
       setFormData({
         title: '',
+        slug: '',
         description: '',
+        challenge: '',
+        solution: '',
+        results: '',
+        metrics: '',
         tech_stack: '',
         github_link: '',
         live_demo_link: '',
@@ -92,9 +111,24 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ isOpen, onClose, project }) =
         setUploading(false);
       }
 
+      const metrics = formData.metrics
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const [label, value] = line.split('|').map((s) => s.trim());
+          return { label: label || '', value: value || '' };
+        })
+        .filter((m) => m.label && m.value);
+
       const payload = {
         title: formData.title,
+        slug: formData.slug || slugify(formData.title),
         description: formData.description,
+        challenge: formData.challenge || null,
+        solution: formData.solution || null,
+        results: formData.results || null,
+        metrics,
         tech_stack: formData.tech_stack
           .split(',')
           .map((t) => t.trim())
@@ -166,9 +200,25 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ isOpen, onClose, project }) =
             <Input
               id="title"
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  title: e.target.value,
+                  slug: formData.slug || slugify(e.target.value),
+                })
+              }
               placeholder="Project title"
               required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="slug">URL Slug</Label>
+            <Input
+              id="slug"
+              value={formData.slug}
+              onChange={(e) => setFormData({ ...formData, slug: slugify(e.target.value) })}
+              placeholder="project-url-slug"
             />
           </div>
 
@@ -181,6 +231,50 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ isOpen, onClose, project }) =
               placeholder="Project overview..."
               rows={5}
               required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="challenge">Challenge (Case Study)</Label>
+            <Textarea
+              id="challenge"
+              value={formData.challenge}
+              onChange={(e) => setFormData({ ...formData, challenge: e.target.value })}
+              placeholder="What problem did the client face?"
+              rows={3}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="solution">Solution</Label>
+            <Textarea
+              id="solution"
+              value={formData.solution}
+              onChange={(e) => setFormData({ ...formData, solution: e.target.value })}
+              placeholder="How did you solve it?"
+              rows={3}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="results">Results</Label>
+            <Textarea
+              id="results"
+              value={formData.results}
+              onChange={(e) => setFormData({ ...formData, results: e.target.value })}
+              placeholder="What outcomes were achieved?"
+              rows={3}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="metrics">Metrics (one per line: Label|Value)</Label>
+            <Textarea
+              id="metrics"
+              value={formData.metrics}
+              onChange={(e) => setFormData({ ...formData, metrics: e.target.value })}
+              placeholder={"40% faster load|Performance\n+25% signups|Conversion"}
+              rows={3}
             />
           </div>
 

@@ -18,6 +18,7 @@ export type Database = {
           id: string
           image_url: string | null
           published: boolean | null
+          slug: string | null
           tags: string[]
           title: string
           updated_at: string | null
@@ -31,6 +32,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           published?: boolean | null
+          slug?: string | null
           tags?: string[]
           title: string
           updated_at?: string | null
@@ -44,6 +46,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           published?: boolean | null
+          slug?: string | null
           tags?: string[]
           title?: string
           updated_at?: string | null
@@ -53,6 +56,7 @@ export type Database = {
       }
       projects: {
         Row: {
+          challenge: string | null
           created_at: string | null
           description: string
           display_order: number | null
@@ -61,6 +65,10 @@ export type Database = {
           id: string
           image_url: string | null
           live_demo_link: string | null
+          metrics: Json | null
+          results: string | null
+          slug: string | null
+          solution: string | null
           tech_stack: string[]
           title: string
           updated_at: string | null
@@ -68,6 +76,7 @@ export type Database = {
           views: number
         }
         Insert: {
+          challenge?: string | null
           created_at?: string | null
           description: string
           display_order?: number | null
@@ -76,6 +85,10 @@ export type Database = {
           id?: string
           image_url?: string | null
           live_demo_link?: string | null
+          metrics?: Json | null
+          results?: string | null
+          slug?: string | null
+          solution?: string | null
           tech_stack?: string[]
           title: string
           updated_at?: string | null
@@ -83,6 +96,7 @@ export type Database = {
           views?: number
         }
         Update: {
+          challenge?: string | null
           created_at?: string | null
           description?: string
           display_order?: number | null
@@ -91,6 +105,10 @@ export type Database = {
           id?: string
           image_url?: string | null
           live_demo_link?: string | null
+          metrics?: Json | null
+          results?: string | null
+          slug?: string | null
+          solution?: string | null
           tech_stack?: string[]
           title?: string
           updated_at?: string | null
@@ -132,6 +150,60 @@ export type Database = {
           subtitle?: string | null
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      partners: {
+        Row: {
+          company_name: string
+          created_at: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          logo_url: string
+          website_url: string | null
+        }
+        Insert: {
+          company_name: string
+          created_at?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          logo_url: string
+          website_url?: string | null
+        }
+        Update: {
+          company_name?: string
+          created_at?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          logo_url?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      contact_messages: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          message: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          message: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          message?: string
+          name?: string
         }
         Relationships: []
       }

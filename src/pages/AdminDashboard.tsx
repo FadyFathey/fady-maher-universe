@@ -4,13 +4,14 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LogOut, Plus, FileText, FolderOpen, User, Layout, BarChart3 } from 'lucide-react';
+import { LogOut, FileText, FolderOpen, User, Layout, BarChart3, Building2 } from 'lucide-react';
 import AdminProtectedRoute from '@/components/admin/AdminProtectedRoute';
 import ProjectsManager from '@/components/admin/ProjectsManager';
 import BlogsManager from '@/components/admin/BlogsManager';
 import SiteSectionsManager from '@/components/admin/SiteSectionsManager';
 import CVManager from '@/components/admin/CVManager';
 import AnalyticsOverview from '@/components/admin/AnalyticsOverview';
+import PartnersManager from '@/components/admin/PartnersManager';
 import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
@@ -70,7 +71,7 @@ const AdminDashboard = () => {
 
             {/* Management Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-5 max-w-3xl">
+              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 max-w-4xl">
                 <TabsTrigger value="analytics" className="flex items-center space-x-2">
                   <BarChart3 className="h-4 w-4" />
                   <span>Analytics</span>
@@ -90,6 +91,10 @@ const AdminDashboard = () => {
                 <TabsTrigger value="blogs" className="flex items-center space-x-2">
                   <FileText className="h-4 w-4" />
                   <span>Blog Posts</span>
+                </TabsTrigger>
+                <TabsTrigger value="partners" className="flex items-center space-x-2">
+                  <Building2 className="h-4 w-4" />
+                  <span>Partners</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -119,6 +124,10 @@ const AdminDashboard = () => {
 
               <TabsContent value="blogs" className="space-y-6">
                 <BlogsManager />
+              </TabsContent>
+
+              <TabsContent value="partners" className="space-y-6">
+                <PartnersManager />
               </TabsContent>
             </Tabs>
           </div>
