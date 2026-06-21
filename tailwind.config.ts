@@ -127,6 +127,18 @@ export default {
 				'marquee-reverse': {
 					'0%': { transform: 'translateX(-50%)' },
 					'100%': { transform: 'translateX(0)' }
+				},
+				'partner-premium': {
+					'0%, 100%': {
+						transform: 'translateY(0)',
+						boxShadow:
+							'0 0 20px hsl(var(--primary) / 0.18), 0 0 40px hsl(var(--primary) / 0.08), inset 0 1px 0 hsl(var(--primary) / 0.12)'
+					},
+					'50%': {
+						transform: 'translateY(-6px)',
+						boxShadow:
+							'0 0 32px hsl(var(--primary) / 0.32), 0 0 64px hsl(var(--primary) / 0.14), inset 0 1px 0 hsl(var(--primary) / 0.2)'
+					}
 				}
 			},
 			animation: {
@@ -135,8 +147,9 @@ export default {
 				'fade-in': 'fade-in 0.6s ease-out',
 				'slide-up': 'slide-up 0.6s ease-out',
 				'scale-in': 'scale-in 0.3s ease-out',
-				marquee: 'marquee 40s linear infinite',
-				'marquee-reverse': 'marquee-reverse 40s linear infinite'
+				marquee: 'marquee 55s linear infinite',
+				'marquee-reverse': 'marquee-reverse 55s linear infinite',
+				'partner-premium': 'partner-premium 5s ease-in-out infinite'
 			},
 			typography: {
 				DEFAULT: {
