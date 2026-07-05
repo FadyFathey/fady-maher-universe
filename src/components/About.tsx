@@ -3,11 +3,16 @@ import { Card, CardContent } from "./ui/card";
 import { useSiteSections } from "@/hooks/useSiteSections";
 import { useTranslation } from "react-i18next";
 import { PROFILE_IMAGE } from "@/config/site";
+import { getProfileImageUrl } from "@/lib/profile";
 
 const About = () => {
   const { data: sections } = useSiteSections();
   const { t } = useTranslation();
   const aboutSection = sections?.find((s) => s.section_key === "about");
+
+  const profileImageUrl =
+    getProfileImageUrl(aboutSection?.content as { image_url?: string | null }) ||
+    PROFILE_IMAGE;
 
   const content = {
     heading: t("about.title"),
@@ -33,10 +38,7 @@ const About = () => {
             <div className="relative w-full max-w-md mx-auto">
               <div className="aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
                 <img
-                  src={
-                    (aboutSection?.content as { image_url?: string })?.image_url ||
-                    PROFILE_IMAGE
-                  }
+                  src={profileImageUrl}
                   alt="Fady Fathey Maher - Web Developer"
                   className="w-full h-full object-cover"
                   loading="lazy"

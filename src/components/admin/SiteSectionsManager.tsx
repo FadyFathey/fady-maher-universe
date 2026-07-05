@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Edit, Eye, EyeOff, ArrowUp, ArrowDown } from 'lucide-react';
 import { useAllSiteSections, useUpdateSiteSection } from '@/hooks/useSiteSections';
 import SiteSectionForm from './SiteSectionForm';
+import ProfileImageManager from './ProfileImageManager';
 
 const SiteSectionsManager = () => {
   const { data: sections, isLoading } = useAllSiteSections();
@@ -53,6 +54,8 @@ const SiteSectionsManager = () => {
           </p>
         </div>
       </div>
+
+      <ProfileImageManager />
 
       <div className="grid gap-4">
         {sections?.map((section, index) => (
